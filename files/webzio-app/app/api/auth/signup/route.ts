@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import dbConnect from '../../../../lib/db'
 import User from '../../../../models/User'
-import { generateToken } from '../../../../lib/auth'
+import { generateOTP, sendOTPEmail } from '../../../../lib/email'
 
 export async function POST(req: Request) {
   try {
@@ -12,30 +12,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Please provide all fields' }, { status: 400 })
     }
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email })
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       return NextResponse.json({ success: false, message: 'User already exists' }, { status: 400 })
     }
 
-    const user = await User.create({ name, email, password })
-    const token = generateToken({ id: user._id, email: user.email })
+    // Generate OTP
+    const otp = generateOTP()
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
-    const response = NextResponse.json({
+    if (existingUser && !existingUser.isVerified) {
+      // Update existing unverified user
+      existingUser.name = name
+      existingUser.password = password
+      existingUser.otp = otp
+      existingUser.otpExpiry = otpExpiry
+      await existingUser.save()
+    } else {
+      // Create new user (unverified)
+      await User.create({
+        name,
+        email,
+        password,
+        isVerified: false,
+        otp,
+        otpExpiry
+      })
+    }
+
+    // Send OTP email
+    await sendOTPEmail(email, otp, name)
+
+    return NextResponse.json({
       success: true,
-      user: { id: user._id, name: user.name, email: user.email },
-      token
-    }, { status: 201 })
+      message: 'OTP sent to your email. Please verify to complete registration.',
+      email
+    }, { status: 200 })
 
-    // Set cookie
-    response.cookies.set('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/'
-    })
-
-    return response
   } catch (error: any) {
+    console.error('Signup error:', error)
     return NextResponse.json({ success: false, message: error.message }, { status: 500 })
   }
 }

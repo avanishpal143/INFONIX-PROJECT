@@ -43,3 +43,6 @@ async function dbConnect() {
 }
 
 export default dbConnect
+
+// Export as named export for compatibility
+export const connectDB = dbConnect

@@ -6,21 +6,47 @@ export interface IUser extends Document {
   email: string
   password: string
   avatar?: string
+  isVerified: boolean
+  isActive: boolean
+  role: 'user' | 'admin' | 'superadmin'
+  otp?: string
+  otpExpiry?: Date
+  otpResendCount?: number
+  lastOtpResendAt?: Date
+  oauthProvider?: string
+  oauthId?: string
+  lastLogin?: Date
+  loginCount: number
+  loginAttempts: number
+  lockUntil?: Date
   createdAt: Date
   comparePassword(password: string): Promise<boolean>
 }
 
 const UserSchema = new Schema<IUser>({
-  name:      { type: String, required: true, trim: true },
-  email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password:  { type: String, required: true, minlength: 6 },
-  avatar:    { type: String, default: '' },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String, required: false, minlength: 6, select: true },
+  avatar: { type: String, default: '' },
+  isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
+  otp: { type: String, select: false },
+  otpExpiry: { type: Date, select: false },
+  otpResendCount: { type: Number, default: 0, select: false },
+  lastOtpResendAt: { type: Date, select: false },
+  oauthProvider: { type: String, default: '' },
+  oauthId: { type: String, default: '' },
+  lastLogin: { type: Date },
+  loginCount: { type: Number, default: 0 },
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: { type: Date },
   createdAt: { type: Date, default: Date.now },
 })
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next()
+  if (!this.isModified('password') || !this.password) return next()
   this.password = await bcrypt.hash(this.password, 12)
   next()
 })
