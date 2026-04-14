@@ -1,10 +1,18 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
+export interface IPage {
+  title: string
+  slug: string
+  content: string
+  isPublished: boolean
+}
+
 export interface IWebsite extends Document {
   userId: mongoose.Types.ObjectId
   siteName: string
   slug: string
   templateId: number
+  templateCategory: string
   content: {
     logo: string
     heroTitle: string
@@ -21,18 +29,40 @@ export interface IWebsite extends Document {
     primaryColor: string
     seoTitle: string
     seoDescription: string
+    favicon: string
+    socialLinks: {
+      facebook?: string
+      instagram?: string
+      twitter?: string
+      youtube?: string
+      linkedin?: string
+    }
   }
+  gallery: string[]
+  pages: IPage[]
   isActive: boolean
+  isEnabled: boolean
+  isPublished: boolean
   views: number
+  leads: number
+  orders: number
   createdAt: Date
   updatedAt: Date
 }
+
+const PageSchema = new Schema<IPage>({
+  title: { type: String, required: true },
+  slug: { type: String, required: true },
+  content: { type: String, default: '' },
+  isPublished: { type: Boolean, default: true },
+})
 
 const WebsiteSchema = new Schema<IWebsite>({
   userId:     { type: Schema.Types.ObjectId, ref: 'User', required: true },
   siteName:   { type: String, required: true, trim: true },
   slug:       { type: String, required: true, unique: true, lowercase: true, trim: true },
-  templateId: { type: Number, required: true, min: 1, max: 5 },
+  templateId: { type: Number, required: true, min: 1 },
+  templateCategory: { type: String, default: '' },
   content: {
     logo:           { type: String, default: '' },
     heroTitle:      { type: String, default: 'Welcome to Our Store' },
@@ -49,9 +79,23 @@ const WebsiteSchema = new Schema<IWebsite>({
     primaryColor:   { type: String, default: '#6366f1' },
     seoTitle:       { type: String, default: '' },
     seoDescription: { type: String, default: '' },
+    favicon:        { type: String, default: '' },
+    socialLinks: {
+      facebook:  { type: String, default: '' },
+      instagram: { type: String, default: '' },
+      twitter:   { type: String, default: '' },
+      youtube:   { type: String, default: '' },
+      linkedin:  { type: String, default: '' },
+    },
   },
-  isActive:  { type: Boolean, default: true },
-  views:     { type: Number, default: 0 },
+  gallery:     { type: [String], default: [] },
+  pages:       { type: [PageSchema], default: [] },
+  isActive:    { type: Boolean, default: true },
+  isEnabled:   { type: Boolean, default: true },
+  isPublished: { type: Boolean, default: false },
+  views:       { type: Number, default: 0 },
+  leads:       { type: Number, default: 0 },
+  orders:      { type: Number, default: 0 },
 }, { timestamps: true })
 
 WebsiteSchema.index({ userId: 1 })

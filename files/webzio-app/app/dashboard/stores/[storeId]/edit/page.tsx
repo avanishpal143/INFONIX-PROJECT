@@ -17,7 +17,7 @@ const SECTIONS = [
   { key: 'seo',      label: '🔍 Marketing / SEO', icon: '🔍' },
 ]
 
-export default function StoreEditPage({ params }: { params: { id: string } }) {
+export default function StoreEditPage({ params }: { params: { storeId: string } }) {
   const { token } = useAuthStore()
   const router = useRouter()
   const [website, setWebsite] = useState<any>(null)
@@ -31,7 +31,7 @@ export default function StoreEditPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/websites/${params.id}`, { headers })
+        const res = await fetch(`/api/websites/${params.storeId}`, { headers })
         const data = await res.json()
         if (!data.success) { router.push('/dashboard/stores'); return }
         setWebsite(data.website)
@@ -40,12 +40,12 @@ export default function StoreEditPage({ params }: { params: { id: string } }) {
       setLoading(false)
     }
     load()
-  }, [params.id])
+  }, [params.storeId])
 
   async function save() {
     setSaving(true)
     try {
-      const res = await fetch(`/api/websites/${params.id}`, {
+      const res = await fetch(`/api/websites/${params.storeId}`, {
         method: 'PUT', headers,
         body: JSON.stringify({ siteName: website.siteName, content }),
       })
@@ -123,7 +123,7 @@ export default function StoreEditPage({ params }: { params: { id: string } }) {
             </button>
           ))}
           <div style={{ marginTop:16, paddingTop:16, borderTop:'1px solid #f1f5f9' }}>
-            <Link href={`/dashboard/products?store=${params.id}`} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', borderRadius:12, color:'#475569', textDecoration:'none', fontSize:'.88rem', fontWeight:500 }}>
+            <Link href={`/dashboard/products?store=${params.storeId}`} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', borderRadius:12, color:'#475569', textDecoration:'none', fontSize:'.88rem', fontWeight:500 }}>
               <span>🍽️</span> Menu / Catalog
             </Link>
           </div>
