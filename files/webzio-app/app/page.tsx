@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ALL_TEMPLATES } from '../lib/templates'
 import MobileNav from '../components/MobileNav'
+import HowItWorks from '../components/HowItWorks'
 
 /* ─────────────────────────────────────────
    HOOKS
@@ -174,6 +175,265 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 /* ─────────────────────────────────────────
+   LAPTOP SHOWCASE COMPONENT
+───────────────────────────────────────── */
+function LaptopShowcase() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [activeIdx, setActiveIdx] = useState(0)
+
+  // Website previews data
+  const websites = [
+    {
+      name: 'The Grand Bistro',
+      url: 'grandbistro.hospitalitycore.com',
+      color: '#c2410c',
+      gradient: 'linear-gradient(135deg,#c2410c,#ea580c)',
+      category: 'Restaurant',
+      sections: [
+        { type: 'nav', bg: '#c2410c' },
+        { type: 'hero', bg: 'linear-gradient(135deg,#c2410c,#ea580c)', title: 'The Grand Bistro', sub: 'Fine Dining · Open Now' },
+        { type: 'menu', items: ['Grilled Salmon ₹850', 'Truffle Pasta ₹720', 'Wagyu Steak ₹2,400', 'Caesar Salad ₹380'] },
+        { type: 'about', color: '#fff7ed' },
+        { type: 'footer', bg: '#1c0a00' },
+      ]
+    },
+    {
+      name: 'Majestic Suites',
+      url: 'majesticsuites.hospitalitycore.com',
+      color: '#1e3a8a',
+      gradient: 'linear-gradient(135deg,#1e3a8a,#3b82f6)',
+      category: 'Hotel',
+      sections: [
+        { type: 'nav', bg: '#1e3a8a' },
+        { type: 'hero', bg: 'linear-gradient(135deg,#1e3a8a,#3b82f6)', title: 'Majestic Suites', sub: 'Luxury Stay · 5 Star' },
+        { type: 'menu', items: ['Deluxe Room ₹4,500/night', 'Suite ₹8,900/night', 'Presidential ₹18,000/night', 'Pool Villa ₹24,000/night'] },
+        { type: 'about', color: '#eff6ff' },
+        { type: 'footer', bg: '#0f172a' },
+      ]
+    },
+    {
+      name: 'MedPlus Pharmacy',
+      url: 'medplus.hospitalitycore.com',
+      color: '#0f766e',
+      gradient: 'linear-gradient(135deg,#0f766e,#14b8a6)',
+      category: 'Pharmacy',
+      sections: [
+        { type: 'nav', bg: '#0f766e' },
+        { type: 'hero', bg: 'linear-gradient(135deg,#0f766e,#14b8a6)', title: 'MedPlus Store', sub: 'Open 24/7 · Home Delivery' },
+        { type: 'menu', items: ['Paracetamol 500mg ₹25', 'Vitamin C 1000mg ₹180', 'BP Monitor ₹1,200', 'Insulin Pen ₹450'] },
+        { type: 'about', color: '#f0fdf4' },
+        { type: 'footer', bg: '#042f2e' },
+      ]
+    },
+    {
+      name: 'FitZone Gym',
+      url: 'fitzone.hospitalitycore.com',
+      color: '#dc2626',
+      gradient: 'linear-gradient(135deg,#dc2626,#f97316)',
+      category: 'Gym',
+      sections: [
+        { type: 'nav', bg: '#dc2626' },
+        { type: 'hero', bg: 'linear-gradient(135deg,#dc2626,#f97316)', title: 'FitZone Gym', sub: 'Transform Your Body' },
+        { type: 'menu', items: ['Monthly Pass ₹999', 'Quarterly ₹2,499', 'Annual ₹7,999', 'Personal Training ₹500/hr'] },
+        { type: 'about', color: '#fff1f2' },
+        { type: 'footer', bg: '#1c0000' },
+      ]
+    },
+  ]
+
+  // Auto-scroll inside laptop screen
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    let pos = 0
+    let dir = 1
+    const speed = 0.8
+    let raf: number
+
+    const animate = () => {
+      pos += speed * dir
+      const maxScroll = el.scrollHeight - el.clientHeight
+      if (pos >= maxScroll) { dir = -1; pos = maxScroll }
+      if (pos <= 0) { dir = 1; pos = 0 }
+      el.scrollTop = pos
+      raf = requestAnimationFrame(animate)
+    }
+    raf = requestAnimationFrame(animate)
+
+    const pause = () => cancelAnimationFrame(raf)
+    const resume = () => { raf = requestAnimationFrame(animate) }
+    el.addEventListener('mouseenter', pause)
+    el.addEventListener('mouseleave', resume)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      el.removeEventListener('mouseenter', pause)
+      el.removeEventListener('mouseleave', resume)
+    }
+  }, [activeIdx])
+
+  // Auto-cycle websites
+  useEffect(() => {
+    const id = setInterval(() => setActiveIdx(i => (i + 1) % websites.length), 4000)
+    return () => clearInterval(id)
+  }, [])
+
+  const site = websites[activeIdx]
+
+  return (
+    <div style={{ position: 'relative', animation: 'fadeIn .8s ease .3s both' }}>
+      <style>{`
+        @keyframes laptopFloat { 0%,100%{transform:translateY(0) rotateX(2deg)} 50%{transform:translateY(-10px) rotateX(2deg)} }
+        @keyframes screenGlow { 0%,100%{box-shadow:0 0 30px rgba(79,70,229,.3)} 50%{box-shadow:0 0 60px rgba(79,70,229,.5)} }
+        @keyframes siteSwitch { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .laptop-wrap { animation: laptopFloat 5s ease-in-out infinite; perspective: 1000px; }
+        .laptop-screen { animation: screenGlow 3s ease-in-out infinite; }
+        .site-content { animation: siteSwitch .4s ease; }
+        .dot-btn { transition: all .2s ease; cursor: pointer; }
+        .dot-btn:hover { transform: scale(1.3); }
+      `}</style>
+
+      {/* Floating label */}
+      <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', padding: '6px 18px', borderRadius: 50, fontSize: '.72rem', fontWeight: 800, whiteSpace: 'nowrap', boxShadow: '0 4px 14px rgba(79,70,229,.4)', zIndex: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', display: 'inline-block', animation: 'blink 1.5s infinite' }} />
+        Live Preview — {site.category}
+      </div>
+
+      {/* Laptop wrapper */}
+      <div className="laptop-wrap" style={{ maxWidth: 520, margin: '0 auto' }}>
+
+        {/* Laptop body */}
+        <div style={{ position: 'relative' }}>
+
+          {/* Screen bezel */}
+          <div className="laptop-screen" style={{ background: 'linear-gradient(145deg,#2d2d2d,#1a1a1a)', borderRadius: '16px 16px 0 0', padding: '12px 12px 0', boxShadow: '0 -4px 20px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1)' }}>
+
+            {/* Camera dot */}
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#333', margin: '0 auto 8px', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.5)' }} />
+
+            {/* Screen */}
+            <div style={{ borderRadius: '8px 8px 0 0', overflow: 'hidden', background: '#fff', position: 'relative' }}>
+
+              {/* Browser chrome */}
+              <div style={{ background: '#f1f3f4', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #e0e0e0' }}>
+                <div style={{ display: 'flex', gap: 5 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+                </div>
+                <div style={{ flex: 1, background: '#fff', borderRadius: 20, padding: '4px 12px', fontSize: '.62rem', color: '#666', display: 'flex', alignItems: 'center', gap: 5, border: '1px solid #e0e0e0' }}>
+                  <span style={{ color: '#4f46e5', fontSize: '.6rem' }}>🔒</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{site.url}</span>
+                </div>
+              </div>
+
+              {/* Scrollable website content */}
+              <div ref={scrollRef} key={activeIdx} className="site-content" style={{ height: 300, overflowY: 'scroll', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <style>{`.site-content::-webkit-scrollbar{display:none}`}</style>
+
+                {/* Navbar */}
+                <div style={{ padding: '10px 16px', background: site.color, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 5 }}>
+                  <span style={{ fontWeight: 900, fontSize: '.75rem', color: '#fff', fontFamily: 'serif' }}>{site.name}</span>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    {['Home', 'Menu', 'About', 'Contact'].map(l => <span key={l} style={{ fontSize: '.55rem', color: 'rgba(255,255,255,.8)' }}>{l}</span>)}
+                    <span style={{ fontSize: '.55rem', fontWeight: 700, padding: '3px 8px', background: 'rgba(255,255,255,.2)', borderRadius: 4, color: '#fff' }}>Order Now</span>
+                  </div>
+                </div>
+
+                {/* Hero */}
+                <div style={{ padding: '28px 16px', background: site.gradient, textAlign: 'center', color: '#fff' }}>
+                  <div style={{ fontSize: '.6rem', fontWeight: 700, opacity: .8, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.1em' }}>{site.category}</div>
+                  <h2 style={{ fontFamily: 'serif', fontWeight: 900, fontSize: '1.1rem', marginBottom: 6 }}>{site.name}</h2>
+                  <p style={{ fontSize: '.65rem', opacity: .85, marginBottom: 14 }}>{site.sections[1].sub as string}</p>
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                    <span style={{ padding: '6px 14px', background: 'rgba(255,255,255,.2)', borderRadius: 6, fontSize: '.6rem', fontWeight: 700, border: '1px solid rgba(255,255,255,.3)' }}>View Menu</span>
+                    <span style={{ padding: '6px 14px', background: '#25D366', borderRadius: 6, fontSize: '.6rem', fontWeight: 700 }}>📲 WhatsApp</span>
+                  </div>
+                </div>
+
+                {/* Menu items */}
+                <div style={{ padding: '16px', background: '#fff' }}>
+                  <div style={{ fontSize: '.65rem', fontWeight: 800, color: '#111', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '.06em' }}>Our Menu</div>
+                  {(site.sections[2].items as string[]).map((item, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: i % 2 === 0 ? '#f9fafb' : '#fff', borderRadius: 8, marginBottom: 6, border: '1px solid #f0f0f0' }}>
+                      <span style={{ fontSize: '.62rem', fontWeight: 600, color: '#111' }}>{item.split('₹')[0]}</span>
+                      <span style={{ fontSize: '.65rem', fontWeight: 800, color: site.color }}>₹{item.split('₹')[1]}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* About section */}
+                <div style={{ padding: '16px', background: site.sections[3].color as string }}>
+                  <div style={{ fontSize: '.65rem', fontWeight: 800, color: '#111', marginBottom: 8 }}>About Us</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {[80, 65, 72, 55].map((w, i) => <div key={i} style={{ height: 5, background: '#e5e7eb', borderRadius: 3, width: `${w}%` }} />)}
+                  </div>
+                  <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    {['⭐ 4.9 Rating', '📍 Location', '🕐 Open Now', '📞 Call Us'].map(s => (
+                      <div key={s} style={{ padding: '6px 8px', background: '#fff', borderRadius: 6, fontSize: '.58rem', fontWeight: 600, color: '#374151', border: '1px solid #e5e7eb' }}>{s}</div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Testimonials */}
+                <div style={{ padding: '16px', background: '#fff' }}>
+                  <div style={{ fontSize: '.65rem', fontWeight: 800, color: '#111', marginBottom: 10 }}>Customer Reviews</div>
+                  {[{ av: 'R', text: 'Amazing food!', stars: '★★★★★' }, { av: 'P', text: 'Best in town.', stars: '★★★★★' }].map((r, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 8, padding: '8px', background: '#f9fafb', borderRadius: 8, marginBottom: 6 }}>
+                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: site.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '.6rem', fontWeight: 800, flexShrink: 0 }}>{r.av}</div>
+                      <div>
+                        <div style={{ fontSize: '.55rem', color: '#f59e0b' }}>{r.stars}</div>
+                        <div style={{ fontSize: '.6rem', color: '#374151' }}>{r.text}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <div style={{ padding: '20px 16px', background: site.gradient, textAlign: 'center' }}>
+                  <div style={{ fontSize: '.7rem', fontWeight: 800, color: '#fff', marginBottom: 8 }}>Ready to Order?</div>
+                  <div style={{ padding: '8px 20px', background: '#25D366', borderRadius: 8, fontSize: '.65rem', fontWeight: 700, color: '#fff', display: 'inline-block' }}>📲 Order on WhatsApp</div>
+                </div>
+
+                {/* Footer */}
+                <div style={{ padding: '14px 16px', background: site.sections[4].bg as string }}>
+                  <div style={{ fontWeight: 900, fontSize: '.7rem', color: '#fff', marginBottom: 6, fontFamily: 'serif' }}>{site.name}</div>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    {['📘', '📸', '🐦'].map(s => <span key={s} style={{ fontSize: '.75rem' }}>{s}</span>)}
+                  </div>
+                  <div style={{ fontSize: '.55rem', color: 'rgba(255,255,255,.4)' }}>© 2026 {site.name}. Powered by HospitalityCore</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Laptop base */}
+          <div style={{ background: 'linear-gradient(180deg,#3a3a3a,#2a2a2a)', height: 14, borderRadius: '0 0 4px 4px', position: 'relative' }}>
+            <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 4, background: '#222', borderRadius: '0 0 4px 4px' }} />
+          </div>
+          {/* Hinge */}
+          <div style={{ background: 'linear-gradient(180deg,#1a1a1a,#111)', height: 6, borderRadius: '0 0 8px 8px', boxShadow: '0 4px 20px rgba(0,0,0,.4)' }} />
+          {/* Base */}
+          <div style={{ background: 'linear-gradient(180deg,#2d2d2d,#222)', height: 20, borderRadius: '0 0 12px 12px', boxShadow: '0 8px 32px rgba(0,0,0,.3)', position: 'relative' }}>
+            <div style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 80, height: 6, background: '#1a1a1a', borderRadius: 3 }} />
+          </div>
+        </div>
+
+        {/* Website selector dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
+          {websites.map((w, i) => (
+            <button key={i} className="dot-btn" onClick={() => setActiveIdx(i)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 50, border: `2px solid ${i === activeIdx ? w.color : '#e5e7eb'}`, background: i === activeIdx ? `${w.color}15` : '#fff', cursor: 'pointer' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: i === activeIdx ? w.color : '#d1d5db', transition: 'all .2s' }} />
+              <span style={{ fontSize: '.65rem', fontWeight: 700, color: i === activeIdx ? w.color : '#9ca3af' }}>{w.category}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────
    MAIN PAGE
 ───────────────────────────────────────── */
 export default function HomePage() {
@@ -271,7 +531,7 @@ export default function HomePage() {
 
   const scrollTemplates = [...ALL_TEMPLATES, ...ALL_TEMPLATES]
 
-  const navLinks = [['Features', '#features'], ['Templates', '#templates'], ['How it Works', '#how'], ['Pricing', '#pricing']]
+  const navLinks: [string, string][] = [['Features', '#features'], ['Templates', '#templates'], ['How it Works', '#how'], ['Pricing', '#pricing']]
 
   return (
     <div style={{ fontFamily: "'Inter',system-ui,sans-serif", background: '#fff', color: '#111', overflowX: 'hidden' }}>
@@ -280,7 +540,7 @@ export default function HomePage() {
       <MobileNav navLinks={navLinks} activeSection={activeSection} navScrolled={navScrolled} />
 
       {/* ── HERO ── */}
-      <section style={{ padding: '140px 6% 100px', background: 'linear-gradient(135deg,#eef2ff 0%,#fdf4ff 35%,#fff1f2 65%,#f0fdf4 100%)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+      <section style={{ padding: '120px 6% 80px', background: 'linear-gradient(135deg,#eef2ff 0%,#fdf4ff 35%,#fff1f2 65%,#f0fdf4 100%)', position: 'relative', overflow: 'hidden' }}>
         {/* animated particles */}
         {[
           { w: 12, h: 12, top: '12%', left: '6%', bg: '#4f46e5', dur: '6s', delay: '0s' },
@@ -289,77 +549,172 @@ export default function HomePage() {
           { w: 10, h: 10, top: '65%', left: '93%', bg: '#f97316', dur: '9s', delay: '0.5s' },
           { w: 6, h: 6, top: '35%', left: '96%', bg: '#ec4899', dur: '5s', delay: '3s' },
           { w: 14, h: 14, top: '78%', left: '12%', bg: '#4f46e5', dur: '7s', delay: '1.5s' },
-          { w: 9, h: 9, top: '45%', left: '2%', bg: '#10b981', dur: '8s', delay: '2.5s' },
-          { w: 7, h: 7, top: '88%', left: '85%', bg: '#f59e0b', dur: '6s', delay: '0.8s' },
         ].map((p, i) => (
-          <div key={i} className="particle" style={{ width: p.w, height: p.h, top: p.top, left: p.left, background: p.bg, opacity: .7, animationDuration: p.dur, animationDelay: p.delay, position: 'absolute', borderRadius: '50%', pointerEvents: 'none', animation: `particleFloat ${p.dur} ${p.delay} ease-in-out infinite` }} />
+          <div key={i} className="particle" style={{ width: p.w, height: p.h, top: p.top, left: p.left, background: p.bg, opacity: .7, position: 'absolute', borderRadius: '50%', pointerEvents: 'none', animation: `particleFloat ${p.dur} ${p.delay} ease-in-out infinite` }} />
         ))}
         {/* bg blobs */}
         <div style={{ position: 'absolute', top: -120, right: -80, width: 500, height: 500, background: 'radial-gradient(circle,rgba(79,70,229,.18),transparent 68%)', borderRadius: '50%', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -100, left: -80, width: 400, height: 400, background: 'radial-gradient(circle,rgba(236,72,153,.14),transparent 68%)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 300, background: 'radial-gradient(ellipse,rgba(124,58,237,.08),transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 800, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <Reveal>
-            <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 24 }}>
-              <span className="blink" style={{ display: 'inline-block', width: 7, height: 7, background: '#4f46e5', borderRadius: '50%', marginRight: 7, verticalAlign: 'middle' }} />
-              Built for Restaurants, Hotels &amp; Local Businesses
-            </div>
-          </Reveal>
+        {/* ── SPLIT LAYOUT ── */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', position: 'relative', zIndex: 1 }}>
 
-          <Reveal delay={100}>
-            <h1 style={{ fontSize: 'clamp(2.6rem,5.5vw,4.4rem)', fontWeight: 900, lineHeight: 1.08, marginBottom: 22, letterSpacing: '-.04em', fontFamily: '"Playfair Display",serif' }}>
-              Your business online<br />
-              <TypeWriter words={['in 5 minutes', 'without coding', 'with WhatsApp orders', 'for free']} />
-            </h1>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <p style={{ fontSize: '1.1rem', color: '#4b5563', lineHeight: 1.9, marginBottom: 40, maxWidth: 560, margin: '0 auto 40px' }}>
-              Build a beautiful website for your restaurant, hotel, pharmacy, salon or any local business. Add your menu, set prices, and let customers order via WhatsApp — <strong>no coding needed.</strong>
-            </p>
-          </Reveal>
-
-          <Reveal delay={300}>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 32 }}>
-              <Link href="/signup" className="btn-primary" style={{ padding: '15px 38px', background: 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', borderRadius: 12, textDecoration: 'none', fontSize: '1.02rem', fontWeight: 700, boxShadow: '0 8px 24px rgba(79,70,229,.38)', display: 'inline-block' }}>
-                Create My Store — Free →
-              </Link>
-              <Link href="/store/demo" className="btn-outline" style={{ padding: '15px 38px', background: '#fff', color: '#111', border: '1.5px solid #d1d5db', borderRadius: 12, textDecoration: 'none', fontSize: '1.02rem', fontWeight: 600, display: 'inline-block' }}>
-                See a Live Example
-              </Link>
-            </div>
-          </Reveal>
-
-          <Reveal delay={400}>
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 52 }}>
-              {['No credit card needed', 'Free plan available', 'Live in under 5 minutes'].map(t => (
-                <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.84rem', color: '#6b7280', fontWeight: 500 }}>
-                  <span style={{ color: '#10b981', fontWeight: 900, fontSize: '1rem' }}>✓</span>{t}
+          {/* LEFT — Content */}
+          <div>
+            <Reveal>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#eef2ff,#fdf4ff)', border:'1px solid #c7d2fe', padding:'7px 16px', borderRadius:50, marginBottom:24 }}>
+                <span style={{ width:8, height:8, borderRadius:'50%', background:'linear-gradient(135deg,#4f46e5,#ec4899)', display:'inline-block', animation:'blink 1.5s ease-in-out infinite', flexShrink:0 }}/>
+                <span style={{ fontSize:'.72rem', fontWeight:800, background:'linear-gradient(135deg,#4f46e5,#7c3aed)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', letterSpacing:'.04em' }}>
+                  🚀 No Code · No Designer · No Hosting Needed
                 </span>
-              ))}
-            </div>
-          </Reveal>
+              </div>
+            </Reveal>
 
-          <Reveal delay={500}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-              {[{ icon: '🍴', label: 'Restaurants' }, { icon: '🏨', label: 'Hotels' }, { icon: '💊', label: 'Pharmacies' }, { icon: '💪', label: 'Gyms' }, { icon: '💅', label: 'Salons' }, { icon: '🏥', label: 'Clinics' }].map(b => (
-                <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', background: 'rgba(255,255,255,0.75)', borderRadius: 50, border: '1px solid #e5e7eb', fontSize: '.8rem', fontWeight: 600, color: '#374151', backdropFilter: 'blur(8px)', transition: 'all .2s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#fff'; (e.currentTarget as HTMLDivElement).style.borderColor = '#c7d2fe' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.75)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e5e7eb' }}>
-                  <span style={{ fontSize: '1rem' }}>{b.icon}</span>{b.label}
+            <Reveal delay={80}>
+              <h1 style={{ fontSize:'clamp(2rem,3.8vw,3.5rem)', fontWeight:900, lineHeight:1.1, marginBottom:20, letterSpacing:'-.04em', fontFamily:'"Playfair Display",serif', minHeight:'clamp(9rem,18vw,14rem)' }}>
+                Turn your business into a<br/>
+                <span style={{ position:'relative', display:'inline-block' }}>
+                  <span style={{ background:'linear-gradient(135deg,#4f46e5,#7c3aed,#ec4899)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+                    stunning website
+                  </span>
+                  {/* Underline animation */}
+                  <span style={{ position:'absolute', bottom:-4, left:0, right:0, height:3, background:'linear-gradient(90deg,#4f46e5,#ec4899)', borderRadius:2, animation:'expandWidth 1s ease .5s both' }}/>
+                </span>
+                <br/>
+                <TypeWriter words={['in 5 minutes', 'without any code', 'with WhatsApp orders', 'completely free']} />
+              </h1>
+            </Reveal>
+
+            <Reveal delay={180}>
+              <p style={{ fontSize:'.97rem', color:'#4b5563', lineHeight:1.95, marginBottom:32, maxWidth:460 }}>
+                HospitalityCore gives every restaurant, hotel, pharmacy & local shop a <strong style={{ color:'#4f46e5' }}>professional website</strong> with menu, WhatsApp ordering, SEO & analytics — all in one place.
+              </p>
+            </Reveal>
+
+            {/* Animated feature pills */}
+            <Reveal delay={260}>
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:28 }}>
+                {[
+                  { icon:'⚡', text:'Live in 5 min', color:'#4f46e5' },
+                  { icon:'💬', text:'WhatsApp Orders', color:'#25D366' },
+                  { icon:'🔍', text:'Google SEO', color:'#ea580c' },
+                  { icon:'📊', text:'Analytics', color:'#7c3aed' },
+                ].map((f, i) => (
+                  <div key={f.text} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', background:`${f.color}10`, border:`1px solid ${f.color}30`, borderRadius:50, fontSize:'.78rem', fontWeight:700, color:f.color, animation:`fadeIn .4s ease ${i*80+260}ms both` }}>
+                    <span>{f.icon}</span>{f.text}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
+            <Reveal delay={340}>
+              <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:28 }}>
+
+                {/* CTA 1 — Primary Liquid Glass */}
+                <Link href="/signup" style={{ textDecoration:'none', display:'inline-block' }}>
+                  <div style={{
+                    position:'relative', padding:'14px 32px', borderRadius:16,
+                    background:'linear-gradient(135deg, rgba(79,70,229,0.9), rgba(124,58,237,0.85))',
+                    backdropFilter:'blur(20px) saturate(180%)',
+                    WebkitBackdropFilter:'blur(20px) saturate(180%)',
+                    border:'1px solid rgba(255,255,255,0.35)',
+                    boxShadow:'0 8px 32px rgba(79,70,229,0.4), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.1)',
+                    cursor:'pointer', overflow:'hidden',
+                    transition:'all .25s ease',
+                  }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'translateY(-2px)'
+                      el.style.boxShadow = '0 14px 40px rgba(79,70,229,0.55), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.1)'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'translateY(0)'
+                      el.style.boxShadow = '0 8px 32px rgba(79,70,229,0.4), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    {/* Shine sweep */}
+                    <div style={{ position:'absolute', top:0, left:'-100%', width:'60%', height:'100%', background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)', transform:'skewX(-20deg)', animation:'shineSweep 3s ease-in-out infinite', pointerEvents:'none' }}/>
+                    {/* Top highlight */}
+                    <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)', pointerEvents:'none' }}/>
+                    <span style={{ position:'relative', zIndex:1, fontSize:'.97rem', fontWeight:800, color:'#fff', letterSpacing:'-.01em', display:'flex', alignItems:'center', gap:8 }}>
+                      <span>🚀</span> Build My Website Free
+                      <span style={{ fontSize:'1rem' }}>→</span>
+                    </span>
+                  </div>
+                </Link>
+
+                {/* CTA 2 — Secondary Liquid Glass */}
+                <Link href="/store/demo" style={{ textDecoration:'none', display:'inline-block' }}>
+                  <div style={{
+                    position:'relative', padding:'14px 32px', borderRadius:16,
+                    background:'rgba(255,255,255,0.55)',
+                    backdropFilter:'blur(20px) saturate(180%)',
+                    WebkitBackdropFilter:'blur(20px) saturate(180%)',
+                    border:'1px solid rgba(255,255,255,0.7)',
+                    boxShadow:'0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.04)',
+                    cursor:'pointer', overflow:'hidden',
+                    transition:'all .25s ease',
+                  }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'translateY(-2px)'
+                      el.style.background = 'rgba(255,255,255,0.75)'
+                      el.style.boxShadow = '0 14px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(0,0,0,0.04)'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'translateY(0)'
+                      el.style.background = 'rgba(255,255,255,0.55)'
+                      el.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.04)'
+                    }}
+                  >
+                    {/* Top highlight */}
+                    <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,255,255,1),transparent)', pointerEvents:'none' }}/>
+                    <span style={{ position:'relative', zIndex:1, fontSize:'.97rem', fontWeight:700, color:'#1e1b4b', letterSpacing:'-.01em', display:'flex', alignItems:'center', gap:8 }}>
+                      <span>👁</span> See Live Demo
+                    </span>
+                  </div>
+                </Link>
+
+              </div>
+            </Reveal>
+
+            <Reveal delay={420}>
+              <div style={{ display:'flex', gap:16, flexWrap:'wrap', marginBottom:28 }}>
+                {['No credit card', 'Free forever plan', 'Setup in 5 minutes'].map(t => (
+                  <span key={t} style={{ display:'flex', alignItems:'center', gap:5, fontSize:'.8rem', color:'#6b7280', fontWeight:500 }}>
+                    <span style={{ width:16, height:16, borderRadius:'50%', background:'#dcfce7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'.6rem', color:'#16a34a', fontWeight:900, flexShrink:0 }}>✓</span>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </Reveal>
+
+            {/* Social proof */}
+            <Reveal delay={500}>
+              <div style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', background:'rgba(255,255,255,.7)', borderRadius:14, border:'1px solid #e5e7eb', backdropFilter:'blur(8px)', width:'fit-content' }}>
+                {/* Avatars */}
+                <div style={{ display:'flex' }}>
+                  {['#f97316','#8b5cf6','#10b981','#0ea5e9','#ec4899'].map((c, i) => (
+                    <div key={i} style={{ width:28, height:28, borderRadius:'50%', background:`linear-gradient(135deg,${c},${c}99)`, border:'2px solid #fff', marginLeft: i===0?0:-8, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'.65rem', color:'#fff', fontWeight:800, zIndex:5-i }}>
+                      {['R','P','A','S','V'][i]}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Reveal>
+                <div>
+                  <div style={{ fontSize:'.78rem', fontWeight:700, color:'#111' }}>1,200+ businesses already live</div>
+                  <div style={{ display:'flex', gap:2, marginTop:1 }}>
+                    {[1,2,3,4,5].map(s => <span key={s} style={{ color:'#f59e0b', fontSize:'.65rem' }}>★</span>)}
+                    <span style={{ fontSize:'.65rem', color:'#6b7280', marginLeft:4 }}>4.9/5 rating</span>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </div>
 
-          {/* scroll down arrow */}
-          <Reveal delay={600}>
-            <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: '#9ca3af', fontSize: '.75rem', fontWeight: 500 }}>
-              <span>Scroll to explore</span>
-              <div style={{ width: 24, height: 24, border: '2px solid #d1d5db', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'floatY 2s ease-in-out infinite' }}>↓</div>
-            </div>
-          </Reveal>
+          {/* RIGHT — Laptop Mockup with auto-scrolling websites */}
+          <LaptopShowcase />
         </div>
       </section>
 
@@ -468,44 +823,10 @@ export default function HomePage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how" style={{ padding: '88px 6%', background: 'linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#fdf4ff 100%)' }}>
-        <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
-          <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>How it works</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Go live in 3 simple steps</h2>
-          <div className="divider" />
-        </Reveal>
-
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 24, maxWidth: 900, margin: '0 auto 40px' }}>
-          {/* connecting dotted line */}
-          <div style={{ position: 'absolute', top: 18, left: '16%', right: '16%', height: 2, background: 'repeating-linear-gradient(90deg,#c7d2fe 0,#c7d2fe 8px,transparent 8px,transparent 16px)', zIndex: 0, display: 'none' }} />
-
-          {steps.map((s, i) => (
-            <Reveal key={i} delay={i * 120}>
-              <div onClick={() => setActiveStep(i)} className={`step-card card${activeStep === i ? ' step-active' : ''}`}
-                style={{ textAlign: 'center', padding: '44px 24px 32px', background: '#fff', borderRadius: 20, boxShadow: '0 4px 18px rgba(0,0,0,.05)', position: 'relative', border: activeStep === i ? `2px solid ${s.color}` : '2px solid transparent' }}>
-                <div style={{ position: 'absolute', top: -18, left: '50%', transform: activeStep === i ? 'translateX(-50%) scale(1.15)' : 'translateX(-50%) scale(1)', width: 36, height: 36, background: `linear-gradient(135deg,${s.color},${s.color}cc)`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '.8rem', boxShadow: `0 4px 12px ${s.color}55`, transition: 'transform .3s' }}>
-                  {s.n}
-                </div>
-                <div style={{ fontSize: '2.6rem', marginBottom: 12, marginTop: 4, transition: 'transform .3s', transform: activeStep === i ? 'scale(1.1)' : 'scale(1)' }}>{s.icon}</div>
-                <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: 10, color: '#111' }}>{s.title}</div>
-                <div style={{ color: '#6b7280', fontSize: '.84rem', lineHeight: 1.8, marginBottom: 14 }}>{s.desc}</div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: activeStep === i ? `${s.color}15` : '#f9fafb', color: activeStep === i ? s.color : '#9ca3af', padding: '5px 12px', borderRadius: 50, fontSize: '.72rem', fontWeight: 700, transition: 'all .3s' }}>
-                  ⏱ {s.detail}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal style={{ textAlign: 'center' }}>
-          <Link href="/signup" className="btn-primary" style={{ padding: '13px 32px', background: 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: '.95rem', fontWeight: 700, boxShadow: '0 6px 20px rgba(79,70,229,.3)', display: 'inline-block' }}>
-            Start Building Now — It's Free →
-          </Link>
-        </Reveal>
-      </section>
+      <HowItWorks />
 
       {/* ── PRICING ── */}
-      <section id="pricing" style={{ padding: '88px 6%', background: '#fff' }}>
+      <section id="pricing" style={{ padding: '88px 6%', background: '#fff', marginTop: 0 }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
           <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>Pricing</div>
           <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Start free, grow at your pace</h2>

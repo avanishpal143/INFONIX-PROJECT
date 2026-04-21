@@ -19,6 +19,7 @@ export interface IUser extends Document {
   loginCount: number
   loginAttempts: number
   lockUntil?: Date
+  plan: 'free' | 'pro' | 'business'
   createdAt: Date
   comparePassword(password: string): Promise<boolean>
 }
@@ -41,6 +42,7 @@ const UserSchema = new Schema<IUser>({
   loginCount: { type: Number, default: 0 },
   loginAttempts: { type: Number, default: 0 },
   lockUntil: { type: Date },
+  plan: { type: String, enum: ['free', 'pro', 'business'], default: 'free' },
   createdAt: { type: Date, default: Date.now },
 })
 

@@ -30,6 +30,26 @@ export async function POST(req: Request) {
     const { siteName, templateId } = await req.json()
     if (!siteName) return NextResponse.json({ success: false, message: 'Store name is required' }, { status: 400 })
 
+    // Check user plan — free users can only have 1 store
+    const user = await (await import('../../../models/User')).default.findById(decoded.id)
+    const existingCount = await Website.countDocuments({ userId: decoded.id })
+    const plan = user?.plan || 'free'
+    const limits: Record<string, number> = { free: 1, pro: 5, business: Infinity }
+    const limit = limits[plan] ?? 1
+
+    if (existingCount >= limit) {
+      return NextResponse.json({
+        success: false,
+        message: plan === 'free'
+          ? 'Free plan allows only 1 store. Upgrade to Pro for 5 stores or Business for unlimited.'
+          : `Your ${plan} plan allows ${limit} stores. Upgrade to Business for unlimited stores.`,
+        needsUpgrade: true,
+        currentPlan: plan,
+        limit,
+        current: existingCount,
+      }, { status: 403 })
+    }
+
     const slug = slugify(siteName, { lower: true, strict: true })
     const website = await Website.create({
       userId: decoded.id,

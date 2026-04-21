@@ -31,14 +31,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json({ success: true, user })
 }
 
-// DELETE user
+// DELETE user — removes user + all their stores + all their products
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const { error } = requireSuperAdmin(req)
   if (error) return error
   await dbConnect()
 
-  await User.findByIdAndDelete(params.id)
-  await Website.deleteMany({ userId: params.id })
+  const Product = (await import('../../../../../models/Product')).default
 
-  return NextResponse.json({ success: true, message: 'User and all associated stores deleted' })
+  // Find all stores of this user first
+  const stores = await Website.find({ userId: params.id }).select('_id')
+  const storeIds = stores.map((s: any) => s._id)
+
+  // Delete in order: products → stores → user
+  await Promise.all([
+    Product.deleteMany({ $or: [{ userId: params.id }, { websiteId: { $in: storeIds } }] }),
+    Website.deleteMany({ userId: params.id }),
+  ])
+  await User.findByIdAndDelete(params.id)
+
+  return NextResponse.json({
+    success: true,
+    message: `User deleted along with ${storeIds.length} store(s) and all associated products.`,
+  })
 }

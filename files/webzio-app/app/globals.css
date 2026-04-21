@@ -74,3 +74,19 @@ section, div[id] { scroll-margin-top: 72px; }
 
 /* ── particles ── */
 .particle { position: absolute; border-radius: 50%; pointer-events: none; }
+
+/* ── Admin scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0A0F1E; }
+::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.5); border-radius: 3px; }
+
+/* ── Hero underline animation ── */
+@keyframes expandWidth { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
+
+/* ── Liquid Glass CTA shine sweep ── */
+@keyframes shineSweep {
+  0%   { left: -100%; opacity: 0; }
+  20%  { opacity: 1; }
+  60%  { left: 150%; opacity: 1; }
+  100% { left: 150%; opacity: 0; }
+}

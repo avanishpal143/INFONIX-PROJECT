@@ -33,8 +33,15 @@ export default function StoresPage() {
     try {
       const res = await fetch('/api/websites', { method: 'POST', headers, body: JSON.stringify(form) })
       const data = await res.json()
-      if (!data.success) { toast.error(data.message); return }
-      toast.success('Hub deployed successfully! 🚀')
+      if (!data.success) {
+        if (data.needsUpgrade) {
+          toast.error('🔒 ' + data.message, { duration: 5000 })
+        } else {
+          toast.error(data.message)
+        }
+        return
+      }
+      toast.success('Store deployed successfully! 🚀')
       setShowModal(false)
       setForm({ siteName: '', templateId: 1 })
       loadStores()

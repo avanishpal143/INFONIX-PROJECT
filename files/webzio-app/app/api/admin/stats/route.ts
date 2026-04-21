@@ -35,16 +35,16 @@ export async function GET(req: NextRequest) {
     Website.find().sort({ createdAt: -1 }).limit(5).select('siteName slug createdAt isEnabled userId').populate('userId', 'name email'),
   ])
 
-  // User growth - last 7 days
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  // User growth - last 14 days
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
   const userGrowth = await User.aggregate([
-    { $match: { createdAt: { $gte: sevenDaysAgo }, role: { $ne: 'superadmin' } } },
+    { $match: { createdAt: { $gte: fourteenDaysAgo }, role: { $ne: 'superadmin' } } },
     { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 } } },
     { $sort: { _id: 1 } },
   ])
 
   const storeGrowth = await Website.aggregate([
-    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    { $match: { createdAt: { $gte: fourteenDaysAgo } } },
     { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 } } },
     { $sort: { _id: 1 } },
   ])

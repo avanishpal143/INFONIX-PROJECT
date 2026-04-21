@@ -54,10 +54,11 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     const website = await Website.findOneAndDelete({ _id: params.id, userId: decoded.id })
     if (!website) return NextResponse.json({ success: false, message: 'Store not found' }, { status: 404 })
 
-    // Optionally delete products here
-    // await Product.deleteMany({ websiteId: params.id })
+    // Delete all products of this store
+    const Product = (await import('../../../../models/Product')).default
+    await Product.deleteMany({ websiteId: params.id })
 
-    return NextResponse.json({ success: true, message: 'Store deleted' })
+    return NextResponse.json({ success: true, message: 'Store and all products deleted' })
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 })
   }
