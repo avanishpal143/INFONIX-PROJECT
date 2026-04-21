@@ -3,148 +3,154 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '../../stores/authStore'
+import { AdminThemeProvider, useAdminTheme } from './theme'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', icon: '📊', path: '/admin' },
-  { label: 'Users', icon: '👥', path: '/admin/users' },
-  { label: 'Stores', icon: '🏪', path: '/admin/stores' },
-  { label: 'Templates', icon: '🎨', path: '/admin/templates' },
+  { label: 'Dashboard',  icon: '📊', path: '/admin' },
+  { label: 'Users',      icon: '👥', path: '/admin/users' },
+  { label: 'Stores',     icon: '🏪', path: '/admin/stores' },
+  { label: 'Templates',  icon: '🎨', path: '/admin/templates' },
   { label: 'Categories', icon: '📁', path: '/admin/categories' },
-  { label: 'Portfolio', icon: '🖼️', path: '/admin/portfolio' },
-  { label: 'Reports', icon: '📈', path: '/admin/reports' },
+  { label: 'Portfolio',  icon: '🖼️', path: '/admin/portfolio' },
+  { label: 'Reports',    icon: '📈', path: '/admin/reports' },
 ]
 
-const C = {
-  bg: '#0A0F1E',
-  sidebar: '#0F172A',
-  purple: '#7C3AED',
-  cyan: '#22D3EE',
-  text: '#F1F5F9',
-  textMuted: '#94A3B8',
-  border: 'rgba(124, 58, 237, 0.15)',
-  cardBg: '#1E293B',
-}
-
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logout } = useAuthStore()
+  const { theme, toggle, C } = useAdminTheme()
   const [collapsed, setCollapsed] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  // Check if user is admin/superadmin, redirect to login if not
+  useEffect(() => { setMounted(true) }, [])
+
   useEffect(() => {
     if (pathname !== '/admin/login' && (!user || (user.role !== 'admin' && user.role !== 'superadmin'))) {
       router.push('/admin/login')
     }
   }, [user, pathname, router])
 
-  // Don't show layout on login page
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
+  if (pathname === '/admin/login') return <>{children}</>
 
   const handleLogout = () => { logout(); router.push('/admin/login') }
+  const sideW = collapsed ? 68 : 256
 
-  const sideW = collapsed ? 72 : 260
+  if (!mounted) return null
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: C.bg, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display:'flex', minHeight:'100vh', background:C.bg, fontFamily:"'Inter',system-ui,sans-serif", transition:'background .3s ease' }}>
+      <style>{`
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse2{0%,100%{opacity:1}50%{opacity:.4}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(99,102,241,.4)}50%{box-shadow:0 0 20px rgba(99,102,241,.8)}}
+        .admin-nav-link{transition:all .2s ease!important}
+        .admin-nav-link:hover{background:rgba(99,102,241,.12)!important;color:${C.purpleLight}!important;transform:translateX(3px)}
+        .admin-card{transition:transform .2s ease,box-shadow .2s ease}
+        .admin-card:hover{transform:translateY(-3px);box-shadow:${C.shadow}!important}
+        .admin-btn{transition:all .18s ease;cursor:pointer}
+        .admin-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+        .quick-card{transition:all .25s ease;cursor:pointer}
+        .quick-card:hover{transform:translateY(-4px);border-color:${C.borderHover}!important}
+      `}</style>
 
-      {/* Sidebar */}
-      <aside style={{
-        width: sideW, minHeight: '100vh', background: `linear-gradient(180deg, ${C.sidebar} 0%, ${C.bg} 100%)`,
-        borderRight: `1px solid ${C.border}`, position: 'fixed', top: 0, bottom: 0, left: 0,
-        display: 'flex', flexDirection: 'column', transition: 'width 0.3s ease', overflow: 'hidden', zIndex: 100,
-      }}>
+      {/* ── SIDEBAR ── */}
+      <aside style={{ width:sideW, minHeight:'100vh', background:C.sidebar, borderRight:`1px solid ${C.border}`, position:'fixed', top:0, bottom:0, left:0, display:'flex', flexDirection:'column', transition:'width .3s cubic-bezier(.4,0,.2,1)', overflow:'hidden', zIndex:100, boxShadow:C.shadow }}>
+
         {/* Logo */}
-        <div style={{ padding: collapsed ? '24px 16px' : '28px 24px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 38, height: 38, minWidth: 38, background: `linear-gradient(135deg, ${C.purple}, ${C.cyan})`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: `0 0 20px ${C.purple}60` }}>⚡</div>
+        <div style={{ padding: collapsed?'20px 14px':'24px 20px', borderBottom:`1px solid ${C.border}`, display:'flex', alignItems:'center', gap:12, minHeight:72 }}>
+          <div style={{ width:36, height:36, minWidth:36, background:`linear-gradient(135deg,${C.purple},${C.cyan})`, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', animation:'glow 3s ease-in-out infinite', flexShrink:0 }}>⚡</div>
           {!collapsed && (
-            <div>
-              <div style={{ fontWeight: 900, fontSize: '1rem', color: '#fff', letterSpacing: '-0.02em' }}>Super<span style={{ color: C.purple }}>Admin</span></div>
-              <div style={{ fontSize: '0.65rem', color: C.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Master Control</div>
+            <div style={{ animation:'slideIn .3s ease' }}>
+              <div style={{ fontWeight:900, fontSize:'.95rem', color:C.text, letterSpacing:'-.02em' }}>Super<span style={{ color:C.purple }}>Admin</span></div>
+              <div style={{ fontSize:'.6rem', color:C.textMuted, fontWeight:700, textTransform:'uppercase', letterSpacing:'.08em' }}>Master Control</div>
             </div>
           )}
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {NAV_ITEMS.map((item) => {
+        <nav style={{ flex:1, padding:'12px 10px', display:'flex', flexDirection:'column', gap:3, overflowY:'auto' }}>
+          {NAV_ITEMS.map((item, idx) => {
             const isActive = pathname === item.path || (item.path !== '/admin' && pathname.startsWith(item.path))
             return (
-              <Link key={item.path} href={item.path} title={collapsed ? item.label : ''} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: collapsed ? '12px' : '11px 14px',
-                borderRadius: 10, textDecoration: 'none',
-                background: isActive ? `linear-gradient(135deg, ${C.purple}30, ${C.cyan}10)` : 'transparent',
-                border: `1px solid ${isActive ? C.purple + '50' : 'transparent'}`,
-                color: isActive ? C.cyan : C.textMuted,
-                fontWeight: isActive ? 700 : 500, fontSize: '0.88rem',
-                transition: 'all 0.2s',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                boxShadow: isActive ? `0 4px 12px ${C.purple}30` : 'none',
-              }}>
-                <span style={{ fontSize: '1.15rem', minWidth: 20, textAlign: 'center' }}>{item.icon}</span>
+              <Link key={item.path} href={item.path} className="admin-nav-link" title={collapsed ? item.label : ''}
+                style={{ display:'flex', alignItems:'center', gap:11, padding: collapsed?'11px':'10px 13px', borderRadius:10, textDecoration:'none', background: isActive?`linear-gradient(135deg,${C.purple}25,${C.cyan}08)`:'transparent', border:`1px solid ${isActive?C.purple+'45':'transparent'}`, color: isActive?C.purpleLight:C.textMuted, fontWeight: isActive?700:500, fontSize:'.86rem', justifyContent: collapsed?'center':'flex-start', boxShadow: isActive?`0 2px 12px ${C.purple}25`:'none', animation:`fadeIn .3s ease ${idx*40}ms both` }}>
+                <span style={{ fontSize:'1.1rem', minWidth:18, textAlign:'center', flexShrink:0 }}>{item.icon}</span>
                 {!collapsed && <span>{item.label}</span>}
-                {!collapsed && isActive && <span style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: C.cyan, boxShadow: `0 0 8px ${C.cyan}` }} />}
+                {!collapsed && isActive && <span style={{ marginLeft:'auto', width:5, height:5, borderRadius:'50%', background:C.cyan, boxShadow:`0 0 8px ${C.cyan}`, animation:'pulse2 2s infinite' }}/>}
               </Link>
             )
           })}
         </nav>
 
         {/* Bottom */}
-        <div style={{ padding: '16px 12px', borderTop: `1px solid ${C.border}` }}>
+        <div style={{ padding:'12px 10px', borderTop:`1px solid ${C.border}` }}>
           {!collapsed && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px', background: `${C.purple}10`, borderRadius: 10, border: `1px solid ${C.purple}20`, marginBottom: 10 }}>
-              <div style={{ width: 36, height: 36, minWidth: 36, background: `linear-gradient(135deg, ${C.purple}, ${C.cyan})`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', color: '#fff', fontWeight: 800 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', background:C.purpleDim, borderRadius:10, border:`1px solid ${C.purple}20`, marginBottom:8 }}>
+              <div style={{ width:32, height:32, minWidth:32, background:`linear-gradient(135deg,${C.purple},${C.cyan})`, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'.85rem', color:'#fff', fontWeight:800, flexShrink:0 }}>
                 {user?.name?.[0]?.toUpperCase() || 'S'}
               </div>
-              <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: C.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'Super Admin'}</div>
-                <div style={{ fontSize: '0.65rem', color: C.purple, fontWeight: 700 }}>MASTER CONTROL</div>
+              <div style={{ overflow:'hidden', flex:1 }}>
+                <div style={{ fontSize:'.78rem', fontWeight:700, color:C.text, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{user?.name || 'Super Admin'}</div>
+                <div style={{ fontSize:'.6rem', color:C.purple, fontWeight:700 }}>SUPERADMIN</div>
               </div>
             </div>
           )}
-          <button onClick={() => setCollapsed(!collapsed)} style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, color: C.textMuted, fontSize: '1rem', cursor: 'pointer', marginBottom: 8, transition: 'all 0.2s' }}>
-            {collapsed ? '→' : '← Collapse'}
+
+          {/* Theme toggle */}
+          <button onClick={toggle} className="admin-btn" style={{ width:'100%', padding:'9px', background:C.card2, border:`1px solid ${C.border}`, borderRadius:9, color:C.textMuted, fontSize:'.82rem', fontWeight:600, marginBottom:6, display:'flex', alignItems:'center', justifyContent: collapsed?'center':'flex-start', gap:8 }}>
+            <span>{theme==='dark'?'☀️':'🌙'}</span>
+            {!collapsed && <span>{theme==='dark'?'Light Mode':'Dark Mode'}</span>}
           </button>
-          <button onClick={handleLogout} style={{ width: '100%', padding: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, color: '#F87171', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.2s' }}>
-            {collapsed ? '🚪' : '🚪 Logout'}
+
+          <button onClick={() => setCollapsed(!collapsed)} className="admin-btn" style={{ width:'100%', padding:'9px', background:C.card2, border:`1px solid ${C.border}`, borderRadius:9, color:C.textMuted, fontSize:'.82rem', marginBottom:6, display:'flex', alignItems:'center', justifyContent: collapsed?'center':'flex-start', gap:8 }}>
+            <span>{collapsed?'→':'←'}</span>
+            {!collapsed && <span>Collapse</span>}
+          </button>
+
+          <button onClick={handleLogout} className="admin-btn" style={{ width:'100%', padding:'9px', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:9, color:'#F87171', fontWeight:700, fontSize:'.8rem', display:'flex', alignItems:'center', justifyContent: collapsed?'center':'flex-start', gap:8 }}>
+            <span>🚪</span>
+            {!collapsed && <span>Logout</span>}
           </button>
         </div>
       </aside>
 
-      {/* Main */}
-      <main style={{ marginLeft: sideW, flex: 1, minHeight: '100vh', background: C.bg, transition: 'margin-left 0.3s ease' }}>
+      {/* ── MAIN ── */}
+      <main style={{ marginLeft:sideW, flex:1, minHeight:'100vh', background:C.bg, transition:'margin-left .3s cubic-bezier(.4,0,.2,1)' }}>
         {/* Topbar */}
-        <div style={{ padding: '20px 40px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: `${C.sidebar}CC`, backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 50 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ padding: '4px 12px', background: `${C.purple}20`, border: `1px solid ${C.purple}40`, borderRadius: 20, fontSize: '0.72rem', fontWeight: 800, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div style={{ padding:'16px 36px', borderBottom:`1px solid ${C.border}`, display:'flex', alignItems:'center', justifyContent:'space-between', background:C.topbar, backdropFilter:'blur(16px)', position:'sticky', top:0, zIndex:50, transition:'background .3s' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ padding:'4px 12px', background:`${C.purple}18`, border:`1px solid ${C.purple}35`, borderRadius:20, fontSize:'.7rem', fontWeight:800, color:C.purpleLight, textTransform:'uppercase', letterSpacing:'.08em' }}>
               ⚡ Super Admin
             </div>
-            <span style={{ color: C.textMuted, fontSize: '0.8rem' }}>Master Control Panel</span>
+            <span style={{ color:C.textMuted, fontSize:'.78rem' }}>
+              {NAV_ITEMS.find(n => pathname === n.path || (n.path !== '/admin' && pathname.startsWith(n.path)))?.label || 'Dashboard'}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 8px rgba(34,197,94,0.6)', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontSize: '0.78rem', color: C.textMuted, fontWeight: 600 }}>System Online</span>
-            <Link href="/dashboard" style={{ padding: '8px 16px', background: `${C.cyan}20`, border: `1px solid ${C.cyan}40`, borderRadius: 8, color: C.cyan, fontSize: '0.78rem', fontWeight: 700, textDecoration: 'none' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <div style={{ width:7, height:7, borderRadius:'50%', background:C.green, boxShadow:`0 0 8px ${C.green}`, animation:'pulse2 2s infinite' }}/>
+              <span style={{ fontSize:'.75rem', color:C.textMuted, fontWeight:600 }}>Online</span>
+            </div>
+            <Link href="/dashboard" style={{ padding:'7px 14px', background:`${C.cyan}15`, border:`1px solid ${C.cyan}35`, borderRadius:8, color:C.cyan, fontSize:'.75rem', fontWeight:700, textDecoration:'none' }}>
               → User Panel
             </Link>
           </div>
         </div>
-        <div style={{ padding: '32px 40px' }}>
+
+        <div style={{ padding:'28px 36px', animation:'fadeIn .4s ease' }}>
           {children}
         </div>
       </main>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${C.purple}50; border-radius: 3px; }
-      `}</style>
     </div>
+  )
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AdminThemeProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </AdminThemeProvider>
   )
 }

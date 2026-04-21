@@ -160,26 +160,7 @@ export default function SignupPage() {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '20px'
     }}>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .signup-container {
-            padding: 30px 20px !important;
-            max-width: 100% !important;
-          }
-          .signup-title {
-            font-size: 1.3rem !important;
-          }
-        }
-      `}</style>
-
-      <div className="signup-container" style={{
-        width: '100%',
-        maxWidth: 420,
-        padding: 40,
-        background: '#fff',
-        borderRadius: 20,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-      }}>
+      <div style={{ width: '100%', maxWidth: 420, padding: 40, background: '#fff', borderRadius: 20, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
 
         {step === 'signup' ? (
           <>
