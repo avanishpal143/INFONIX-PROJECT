@@ -9,58 +9,229 @@ function LivePreviewPanel({ form }: { form: any }) {
   const { C } = useAdminTheme()
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const [fullscreen, setFullscreen] = useState(false)
+  const [zoom, setZoom] = useState(100)
 
   const widths = { desktop: '100%', tablet: '768px', mobile: '375px' }
   const deviceW = widths[device]
 
   const panel = (
-    <div style={{ background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: fullscreen ? 0 : 16, padding: fullscreen ? 0 : 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: fullscreen ? '100vh' : 'auto' }}>
+    <div style={{
+      background: C.card,
+      border: `1px solid ${C.cardBorder}`,
+      borderRadius: fullscreen ? 0 : 16,
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      height: fullscreen ? '100vh' : '85vh',
+      boxShadow: fullscreen ? 'none' : '0 8px 32px rgba(0,0,0,.12)'
+    }}>
       {/* Toolbar */}
-      <div style={{ padding: '10px 14px', background: C.card2, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        {/* Live dot */}
-        <div style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, boxShadow: `0 0 6px ${C.green}`, animation: 'pulse2 2s infinite' }} />
-        <span style={{ fontSize: '.8rem', fontWeight: 700, color: C.text }}>Live Preview</span>
-        <span style={{ fontSize: '.65rem', color: C.textMuted, marginRight: 'auto' }}>Updates as you type</span>
+      <div style={{
+        padding: '12px 16px',
+        background: `linear-gradient(135deg, ${C.purple}08, ${C.cyan}05)`,
+        borderBottom: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        flexShrink: 0
+      }}>
+        {/* Live indicator with pulse animation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: C.green,
+            boxShadow: `0 0 8px ${C.green}`,
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }} />
+          <span style={{ fontSize: '.85rem', fontWeight: 800, color: C.text }}>Live Preview</span>
+        </div>
+        <span style={{
+          fontSize: '.7rem',
+          color: C.textMuted,
+          marginRight: 'auto',
+          padding: '4px 10px',
+          background: `${C.purple}10`,
+          borderRadius: 20,
+          fontWeight: 600
+        }}>
+          ⚡ Real-time updates
+        </span>
+
+        {/* Zoom control */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button
+            onClick={() => setZoom(z => Math.max(50, z - 10))}
+            style={{
+              padding: '4px 8px',
+              borderRadius: 6,
+              border: `1px solid ${C.border}`,
+              background: C.bg,
+              color: C.text,
+              cursor: 'pointer',
+              fontSize: '.75rem',
+              fontWeight: 700
+            }}
+          >
+            −
+          </button>
+          <span style={{ fontSize: '.7rem', color: C.textMuted, minWidth: 45, textAlign: 'center', fontWeight: 600 }}>
+            {zoom}%
+          </span>
+          <button
+            onClick={() => setZoom(z => Math.min(150, z + 10))}
+            style={{
+              padding: '4px 8px',
+              borderRadius: 6,
+              border: `1px solid ${C.border}`,
+              background: C.bg,
+              color: C.text,
+              cursor: 'pointer',
+              fontSize: '.75rem',
+              fontWeight: 700
+            }}
+          >
+            +
+          </button>
+        </div>
 
         {/* Device switcher */}
-        <div style={{ display: 'flex', background: C.bg, borderRadius: 8, padding: 2, border: `1px solid ${C.border}` }}>
+        <div style={{
+          display: 'flex',
+          background: C.bg,
+          borderRadius: 10,
+          padding: 3,
+          border: `1px solid ${C.border}`,
+          boxShadow: 'inset 0 1px 3px rgba(0,0,0,.05)'
+        }}>
           {([['desktop', '🖥️'], ['tablet', '📱'], ['mobile', '📲']] as const).map(([d, icon]) => (
-            <button key={d} onClick={() => setDevice(d)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: '.75rem', background: device === d ? C.purple : 'transparent', color: device === d ? '#fff' : C.textMuted, transition: 'all .15s' }}>
+            <button
+              key={d}
+              onClick={() => setDevice(d)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 8,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '.8rem',
+                background: device === d ? `linear-gradient(135deg, ${C.purple}, ${C.cyan})` : 'transparent',
+                color: device === d ? '#fff' : C.textMuted,
+                transition: 'all .2s',
+                fontWeight: device === d ? 700 : 500,
+                boxShadow: device === d ? `0 2px 8px ${C.purple}40` : 'none'
+              }}
+            >
               {icon}
             </button>
           ))}
         </div>
 
         {/* Fullscreen toggle */}
-        <button onClick={() => setFullscreen(f => !f)} style={{ padding: '5px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'transparent', color: C.textMuted, cursor: 'pointer', fontSize: '.75rem', fontWeight: 600 }}>
-          {fullscreen ? '⊠ Exit' : '⊞ Full'}
+        <button
+          onClick={() => setFullscreen(f => !f)}
+          style={{
+            padding: '6px 14px',
+            borderRadius: 8,
+            border: `1px solid ${C.border}`,
+            background: fullscreen ? `${C.purple}15` : C.bg,
+            color: fullscreen ? C.purple : C.textMuted,
+            cursor: 'pointer',
+            fontSize: '.75rem',
+            fontWeight: 700,
+            transition: 'all .2s'
+          }}
+        >
+          {fullscreen ? '⊠ Exit' : '⊞ Fullscreen'}
         </button>
       </div>
 
       {/* Browser chrome */}
-      <div style={{ padding: '8px 12px', background: C.bg, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <div style={{ display: 'flex', gap: 5 }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e' }} />
+      <div style={{
+        padding: '10px 14px',
+        background: C.bg,
+        borderBottom: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        flexShrink: 0
+      }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ef4444' }} />
+          <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#f59e0b' }} />
+          <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#22c55e' }} />
         </div>
-        <div style={{ flex: 1, background: C.card2, borderRadius: 6, padding: '4px 10px', fontSize: '.68rem', color: C.textMuted, border: `1px solid ${C.border}` }}>
-          🔒 yoursite.com/{(form.name || 'template').toLowerCase().replace(/\s+/g, '-')}
+        <div style={{
+          flex: 1,
+          background: C.card2,
+          borderRadius: 8,
+          padding: '6px 12px',
+          fontSize: '.72rem',
+          color: C.textMuted,
+          border: `1px solid ${C.border}`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          <span style={{ color: C.green }}>🔒</span>
+          <span style={{ fontWeight: 600 }}>yoursite.com/</span>
+          <span style={{ color: C.purple, fontWeight: 700 }}>
+            {(form.name || 'template').toLowerCase().replace(/\s+/g, '-')}
+          </span>
         </div>
       </div>
 
       {/* Preview area */}
-      <div style={{ flex: 1, overflow: 'auto', background: '#e5e7eb', padding: device === 'desktop' ? 0 : '16px', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: deviceW, maxWidth: '100%', background: '#fff', boxShadow: device !== 'desktop' ? '0 4px 24px rgba(0,0,0,.15)' : 'none', borderRadius: device !== 'desktop' ? 12 : 0, overflow: 'hidden', transition: 'width .3s ease' }}>
+      <div style={{
+        flex: 1,
+        overflow: 'auto',
+        background: '#e5e7eb',
+        padding: device === 'desktop' ? 0 : '20px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: device === 'desktop' ? 'flex-start' : 'center'
+      }}>
+        <div style={{
+          width: deviceW,
+          maxWidth: '100%',
+          background: '#fff',
+          boxShadow: device !== 'desktop' ? '0 8px 32px rgba(0,0,0,.2)' : 'none',
+          borderRadius: device !== 'desktop' ? 16 : 0,
+          overflow: 'hidden',
+          transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `scale(${zoom / 100})`,
+          transformOrigin: 'top center',
+          minHeight: device === 'desktop' ? '100%' : 'auto'
+        }}>
           <LivePreview form={form} />
         </div>
+      </div>
+
+      {/* Footer info */}
+      <div style={{
+        padding: '8px 16px',
+        background: C.card2,
+        borderTop: `1px solid ${C.border}`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: '.7rem',
+        color: C.textMuted,
+        flexShrink: 0
+      }}>
+        <span>
+          <strong style={{ color: C.text }}>{form.name || 'Untitled'}</strong> · {form.category || 'No category'}
+        </span>
+        <span style={{ color: C.purple, fontWeight: 600 }}>
+          {device === 'desktop' ? '1920×1080' : device === 'tablet' ? '768×1024' : '375×667'}
+        </span>
       </div>
     </div>
   )
 
   if (fullscreen) {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: C.bg }}>
         {panel}
       </div>
     )
@@ -68,6 +239,14 @@ function LivePreviewPanel({ form }: { form: any }) {
 
   return panel
 }
+
+/* Add pulse animation */
+const pulseAnimation = `
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+`
 
 /* ── Default config ── */
 const DEFAULT_CONFIG = {
@@ -432,7 +611,12 @@ export default function AdminTemplatesPage() {
 
   return (
     <div>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.tpl-card{transition:transform .2s,box-shadow .2s}.tpl-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(99,102,241,.15)!important}`}</style>
+      <style>{`
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .tpl-card{transition:transform .2s,box-shadow .2s}
+        .tpl-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(99,102,241,.15)!important}
+      `}</style>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, animation: 'fadeIn .4s ease' }}>
@@ -448,54 +632,161 @@ export default function AdminTemplatesPage() {
 
       {/* ── BUILDER FORM ── */}
       {showForm && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20, marginBottom: 24, animation: 'fadeIn .3s ease' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 24, marginBottom: 24, animation: 'fadeIn .3s ease' }}>
           {/* Left — form */}
-          <div style={{ background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 16, padding: 24 }}>
-            <h3 style={{ fontSize: '.95rem', fontWeight: 800, color: C.text, marginBottom: 20 }}>{editing ? '✏️ Edit Template' : '➕ Create New Template'}</h3>
+          <div style={{ background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 16, padding: 28, boxShadow: '0 4px 16px rgba(0,0,0,.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingBottom: 20, borderBottom: `2px solid ${C.border}` }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: C.text, marginBottom: 4 }}>
+                  {editing ? '✏️ Edit Template' : '➕ Create New Template'}
+                </h3>
+                <p style={{ fontSize: '.75rem', color: C.textMuted }}>
+                  {editing ? 'Update template details and see changes live' : 'Design your template and preview in real-time'}
+                </p>
+              </div>
+            </div>
 
             {/* Basic info */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20, paddingBottom: 20, borderBottom: `1px solid ${C.border}` }}>
-              {[
-                { label: 'Template Name *', key: 'name', placeholder: 'e.g. Modern Restaurant' },
-                { label: 'Category *', key: 'category', placeholder: 'e.g. Food & Dining' },
-                { label: 'Icon (Emoji)', key: 'icon', placeholder: '🌐' },
-                { label: 'Description', key: 'desc', placeholder: 'Short description...' },
-                { label: 'Tags (comma-sep)', key: 'tags', placeholder: 'Menu, WhatsApp, Booking' },
-                { label: 'Preview Image URL', key: 'previewImage', placeholder: 'https://...' },
-              ].map(({ label, key, placeholder }) => (
-                <div key={key}>
-                  <label style={{ display: 'block', fontSize: '.68rem', fontWeight: 700, color: C.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.05em' }}>{label}</label>
-                  <input style={inp} value={form[key]} onChange={e => setForm((f: any) => ({ ...f, [key]: e.target.value }))} placeholder={placeholder} />
+            <div style={{ marginBottom: 28 }}>
+              <h4 style={{ fontSize: '.85rem', fontWeight: 800, color: C.text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: '1.2rem' }}>📝</span> Basic Information
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
+                {[
+                  { label: 'Template Name *', key: 'name', placeholder: 'e.g. Modern Restaurant', span: 2 },
+                  { label: 'Category *', key: 'category', placeholder: 'e.g. Food & Dining' },
+                  { label: 'Icon (Emoji)', key: 'icon', placeholder: '🌐' },
+                  { label: 'Description', key: 'desc', placeholder: 'Short description...', span: 2 },
+                  { label: 'Tags (comma-separated)', key: 'tags', placeholder: 'Menu, WhatsApp, Booking', span: 2 },
+                  { label: 'Preview Image URL', key: 'previewImage', placeholder: 'https://...', span: 2 },
+                ].map(({ label, key, placeholder, span }) => (
+                  <div key={key} style={{ gridColumn: span ? `span ${span}` : 'auto' }}>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '.7rem', 
+                      fontWeight: 700, 
+                      color: C.textMuted, 
+                      marginBottom: 6, 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '.05em' 
+                    }}>
+                      {label}
+                    </label>
+                    <input 
+                      style={{
+                        ...inp,
+                        transition: 'all .2s',
+                        ':focus': { borderColor: C.purple, boxShadow: `0 0 0 3px ${C.purple}15` }
+                      }} 
+                      value={form[key]} 
+                      onChange={e => setForm((f: any) => ({ ...f, [key]: e.target.value }))} 
+                      placeholder={placeholder} 
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Colors & Type */}
+            <div style={{ marginBottom: 28 }}>
+              <h4 style={{ fontSize: '.85rem', fontWeight: 800, color: C.text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: '1.2rem' }}>🎨</span> Colors & Type
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '.7rem', fontWeight: 700, color: C.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                    Accent Color
+                  </label>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <input 
+                      type="color" 
+                      style={{ width: 50, height: 40, border: `2px solid ${C.border}`, borderRadius: 8, cursor: 'pointer' }} 
+                      value={form.accentColor} 
+                      onChange={e => setForm((f: any) => ({ ...f, accentColor: e.target.value, config: { ...f.config, primaryColor: e.target.value } }))} 
+                    />
+                    <input 
+                      type="text" 
+                      style={{ ...inp, flex: 1 }} 
+                      value={form.accentColor} 
+                      onChange={e => setForm((f: any) => ({ ...f, accentColor: e.target.value, config: { ...f.config, primaryColor: e.target.value } }))} 
+                    />
+                  </div>
                 </div>
-              ))}
-              <div>
-                <label style={{ display: 'block', fontSize: '.68rem', fontWeight: 700, color: C.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.05em' }}>Accent Color</label>
-                <input type="color" style={{ ...inp, height: 40, padding: '4px 8px' }} value={form.accentColor} onChange={e => setForm((f: any) => ({ ...f, accentColor: e.target.value, config: { ...f.config, primaryColor: e.target.value } }))} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '.68rem', fontWeight: 700, color: C.textMuted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.05em' }}>Type</label>
-                <select style={inp} value={form.templateType} onChange={e => setForm((f: any) => ({ ...f, templateType: e.target.value }))}>
-                  <option value="general">General</option>
-                  <option value="portfolio">Portfolio</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center', gridColumn: '1/-1' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.84rem', color: C.text, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={form.popular} onChange={e => setForm((f: any) => ({ ...f, popular: e.target.checked }))} /> Popular
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.84rem', color: C.text, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={form.isActive} onChange={e => setForm((f: any) => ({ ...f, isActive: e.target.checked }))} /> Active
-                </label>
+                <div>
+                  <label style={{ display: 'block', fontSize: '.7rem', fontWeight: 700, color: C.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                    Template Type
+                  </label>
+                  <select style={inp} value={form.templateType} onChange={e => setForm((f: any) => ({ ...f, templateType: e.target.value }))}>
+                    <option value="general">General</option>
+                    <option value="portfolio">Portfolio</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '.7rem', fontWeight: 700, color: C.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                    Options
+                  </label>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'center', height: 40 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.8rem', color: C.text, cursor: 'pointer' }}>
+                      <input type="checkbox" checked={form.popular} onChange={e => setForm((f: any) => ({ ...f, popular: e.target.checked }))} /> 
+                      <span style={{ fontWeight: 600 }}>⭐ Popular</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.8rem', color: C.text, cursor: 'pointer' }}>
+                      <input type="checkbox" checked={form.isActive} onChange={e => setForm((f: any) => ({ ...f, isActive: e.target.checked }))} /> 
+                      <span style={{ fontWeight: 600 }}>✓ Active</span>
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Design Config Builder */}
-            <h4 style={{ fontSize: '.88rem', fontWeight: 800, color: C.text, marginBottom: 14 }}>⚙️ Design Configuration</h4>
-            <TemplateBuilder config={form.config} onChange={cfg => setForm((f: any) => ({ ...f, config: cfg }))} />
+            <div style={{ marginBottom: 24 }}>
+              <h4 style={{ fontSize: '.85rem', fontWeight: 800, color: C.text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: '1.2rem' }}>⚙️</span> Design Configuration
+              </h4>
+              <div style={{ background: `${C.purple}05`, border: `1px solid ${C.purple}20`, borderRadius: 12, padding: 20 }}>
+                <TemplateBuilder config={form.config} onChange={cfg => setForm((f: any) => ({ ...f, config: cfg }))} />
+              </div>
+            </div>
 
-            <button onClick={save} disabled={saving} style={{ marginTop: 20, padding: '12px 28px', background: `linear-gradient(135deg,${C.purple},${C.cyan})`, border: 'none', borderRadius: 10, color: '#fff', fontWeight: 800, fontSize: '.9rem', cursor: 'pointer', boxShadow: `0 4px 16px ${C.purple}40` }}>
-              {saving ? 'Saving...' : editing ? '💾 Update Template' : '✨ Create Template'}
-            </button>
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 20, borderTop: `1px solid ${C.border}` }}>
+              <button 
+                onClick={() => { setForm(EMPTY_FORM); setEditing(null); setShowForm(false) }}
+                style={{ 
+                  padding: '12px 24px', 
+                  background: C.bg, 
+                  border: `1px solid ${C.border}`, 
+                  borderRadius: 10, 
+                  color: C.text, 
+                  fontWeight: 700, 
+                  fontSize: '.85rem', 
+                  cursor: 'pointer',
+                  transition: 'all .2s'
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={save} 
+                disabled={saving} 
+                style={{ 
+                  padding: '12px 32px', 
+                  background: `linear-gradient(135deg,${C.purple},${C.cyan})`, 
+                  border: 'none', 
+                  borderRadius: 10, 
+                  color: '#fff', 
+                  fontWeight: 800, 
+                  fontSize: '.9rem', 
+                  cursor: saving ? 'not-allowed' : 'pointer', 
+                  boxShadow: `0 4px 16px ${C.purple}40`,
+                  opacity: saving ? 0.7 : 1,
+                  transition: 'all .2s'
+                }}
+              >
+                {saving ? '⏳ Saving...' : editing ? '💾 Update Template' : '✨ Create Template'}
+              </button>
+            </div>
           </div>
 
           {/* Right — Live Preview */}
