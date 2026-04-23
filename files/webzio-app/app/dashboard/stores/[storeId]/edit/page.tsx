@@ -103,13 +103,13 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
       </div>
 
       {/* Main Content - 3 Columns */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', margin: '8px' }}>
         {/* Left - Sections */}
-        <div style={{ width: 180, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ width: 180, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0, borderRadius: '8px', marginRight: '8px' }}>
           <div style={{ padding: '10px 8px', borderBottom: '1px solid #334155' }}>
             <div style={{ fontSize: '.62rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.03em' }}>CUSTOMIZATION</div>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '6px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
             {SECTIONS.map(s => (
               <button key={s.key} onClick={() => setActiveSection(s.key)}
                 style={{ width: '100%', textAlign: 'left', padding: '7px 8px', borderRadius: 4, border: 'none', background: activeSection === s.key ? '#334155' : 'transparent', color: activeSection === s.key ? '#e2e8f0' : '#94a3b8', fontSize: '.75rem', fontWeight: activeSection === s.key ? 600 : 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7, marginBottom: 1, transition: 'all 0.1s' }}>
@@ -121,13 +121,13 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
         </div>
 
         {/* Middle - Editor */}
-        <div style={{ width: 320, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ width: 320, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0, borderRadius: '8px', marginRight: '8px' }}>
           <div style={{ padding: '10px 12px', borderBottom: '1px solid #334155' }}>
             <div style={{ fontSize: '.8rem', fontWeight: 700, color: '#e2e8f0' }}>
               {SECTIONS.find(s => s.key === activeSection)?.icon} {SECTIONS.find(s => s.key === activeSection)?.label}
             </div>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
 
             {activeSection === 'general' && (
               <div>
@@ -206,10 +206,10 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
         </div>
 
         {/* Right - Preview */}
-        <div style={{ flex: 1, background: '#0a0f1e', overflowY: 'auto' }}>
-          <div style={{ padding: '12px' }}>
+        <div style={{ flex: 1, background: '#0a0f1e', overflowY: 'auto', borderRadius: '8px' }}>
+          <div style={{ padding: '8px' }}>
             {/* Preview Header */}
-            <div style={{ background: '#1e293b', borderRadius: 6, padding: 10, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: '#1e293b', borderRadius: 6, padding: 10, marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 5, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.9rem' }}>👁</div>
                 <div>
@@ -242,7 +242,7 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
               </div>
 
               {/* Preview Content */}
-              <div style={{ background: '#fff', minHeight: 500, maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+              <div style={{ background: '#fff', minHeight: 500, maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
                 {/* Announcement */}
                 {content.announcement && (
                   <div style={{ background: content.primaryColor || '#6366f1', color: '#fff', padding: '8px 14px', textAlign: 'center', fontSize: '.78rem', fontWeight: 600 }}>
@@ -281,9 +281,9 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
                 )}
 
                 {/* Content */}
-                <div style={{ padding: '30px 20px' }}>
+                <div style={{ padding: '20px 16px' }}>
                   {/* Logo & Name */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 30, paddingBottom: 20, borderBottom: '2px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, paddingBottom: 16, borderBottom: '2px solid #f1f5f9' }}>
                     {content.logo && <img src={content.logo} alt="Logo" style={{ width: 60, height: 60, objectFit: 'contain', borderRadius: 6 }} />}
                     <div>
                       <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#1e293b', marginBottom: 3 }}>{website.siteName}</h2>
@@ -293,8 +293,8 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
 
                   {/* About */}
                   {content.aboutText && (
-                    <div style={{ marginBottom: 30 }}>
-                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1e293b', marginBottom: 12 }}>
+                    <div style={{ marginBottom: 20 }}>
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1e293b', marginBottom: 10 }}>
                         {content.aboutTitle || '📖 About'}
                       </h3>
                       <div style={{ display: 'grid', gridTemplateColumns: content.aboutImage ? '1fr 1fr' : '1fr', gap: 20, alignItems: 'center' }}>
@@ -305,10 +305,10 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
                   )}
 
                   {/* Contact & Social */}
-                  <div style={{ display: 'grid', gridTemplateColumns: (content.contactPhone || content.contactEmail) && (content.socialLinks?.facebook || content.socialLinks?.instagram) ? '1fr 1fr' : '1fr', gap: 20, marginBottom: 30 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: (content.contactPhone || content.contactEmail) && (content.socialLinks?.facebook || content.socialLinks?.instagram) ? '1fr 1fr' : '1fr', gap: 16, marginBottom: 20 }}>
                     {(content.contactPhone || content.contactEmail || content.contactAddress) && (
-                      <div style={{ background: '#f8fafc', padding: 20, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 12 }}>📞 Contact</h4>
+                      <div style={{ background: '#f8fafc', padding: 16, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 10 }}>📞 Contact</h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           {content.contactPhone && <div style={{ display: 'flex', gap: 8 }}><span>📱</span><span style={{ fontSize: '.85rem', color: '#475569' }}>{content.contactPhone}</span></div>}
                           {content.contactEmail && <div style={{ display: 'flex', gap: 8 }}><span>✉️</span><span style={{ fontSize: '.85rem', color: '#475569' }}>{content.contactEmail}</span></div>}
@@ -318,8 +318,8 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
                     )}
 
                     {(content.socialLinks?.facebook || content.socialLinks?.instagram || content.socialLinks?.twitter) && (
-                      <div style={{ background: '#f8fafc', padding: 20, borderRadius: 10, border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 12 }}>Follow Us</h4>
+                      <div style={{ background: '#f8fafc', padding: 16, borderRadius: 10, border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 10 }}>Follow Us</h4>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
                           {content.socialLinks?.facebook && <a href={content.socialLinks.facebook} target="_blank" style={{ width: 40, height: 40, borderRadius: '50%', background: '#1877f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '1.2rem', fontWeight: 700 }}>f</a>}
                           {content.socialLinks?.instagram && <a href={content.socialLinks.instagram} target="_blank" style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(45deg,#f09433,#dc2743)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '1.1rem' }}>📷</a>}
@@ -331,16 +331,16 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
 
                   {/* Service */}
                   {(content.openingHours || content.amenities) && (
-                    <div style={{ background: '#fff', padding: 20, borderRadius: 10, border: '2px solid #e2e8f0', marginBottom: 30 }}>
-                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 12 }}>🕰 Service</h4>
+                    <div style={{ background: '#fff', padding: 16, borderRadius: 10, border: '2px solid #e2e8f0', marginBottom: 20 }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: 10 }}>🕰 Service</h4>
                       {content.openingHours && <div style={{ marginBottom: 8 }}><span style={{ fontSize: '.8rem', fontWeight: 700, color: '#64748b' }}>Hours: </span><span style={{ fontSize: '.8rem', color: '#475569' }}>{content.openingHours}</span></div>}
                       {content.amenities && <div><span style={{ fontSize: '.8rem', fontWeight: 700, color: '#64748b' }}>Amenities: </span><span style={{ fontSize: '.8rem', color: '#475569' }}>{content.amenities}</span></div>}
                     </div>
                   )}
 
                   {/* Footer */}
-                  <div style={{ paddingTop: 20, borderTop: '2px solid #f1f5f9', textAlign: 'center' }}>
-                    <p style={{ fontSize: '.8rem', color: '#94a3b8' }}>
+                  <div style={{ paddingTop: 16, borderTop: '2px solid #f1f5f9', textAlign: 'center' }}>
+                    <p style={{ fontSize: '.8rem', color: '#94a3b8', margin: 0 }}>
                       {content.footerDesc || `© ${new Date().getFullYear()} ${website.siteName}`}
                     </p>
                   </div>
