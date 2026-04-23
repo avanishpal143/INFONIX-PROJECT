@@ -7,8 +7,8 @@ import SessionWrapper from './SessionWrapper'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "HospitalityCore — Build Your Restaurant or Hotel Website",
-  description: "Create your restaurant, hotel or local business website in 5 minutes. No coding needed.",
+  title: "Webrazeo — Build Your Business Website in 5 Minutes",
+  description: "Create your restaurant, hotel, pharmacy or local business website in 5 minutes. No coding needed. WhatsApp orders, SEO & analytics included.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

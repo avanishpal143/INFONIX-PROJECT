@@ -185,7 +185,7 @@ function LaptopShowcase() {
   const websites = [
     {
       name: 'The Grand Bistro',
-      url: 'grandbistro.hospitalitycore.com',
+      url: 'grandbistro.webrazeo.com',
       color: '#c2410c',
       gradient: 'linear-gradient(135deg,#c2410c,#ea580c)',
       category: 'Restaurant',
@@ -199,7 +199,7 @@ function LaptopShowcase() {
     },
     {
       name: 'Majestic Suites',
-      url: 'majesticsuites.hospitalitycore.com',
+      url: 'majesticsuites.webrazeo.com',
       color: '#1e3a8a',
       gradient: 'linear-gradient(135deg,#1e3a8a,#3b82f6)',
       category: 'Hotel',
@@ -213,7 +213,7 @@ function LaptopShowcase() {
     },
     {
       name: 'MedPlus Pharmacy',
-      url: 'medplus.hospitalitycore.com',
+      url: 'medplus.webrazeo.com',
       color: '#0f766e',
       gradient: 'linear-gradient(135deg,#0f766e,#14b8a6)',
       category: 'Pharmacy',
@@ -227,7 +227,7 @@ function LaptopShowcase() {
     },
     {
       name: 'FitZone Gym',
-      url: 'fitzone.hospitalitycore.com',
+      url: 'fitzone.webrazeo.com',
       color: '#dc2626',
       gradient: 'linear-gradient(135deg,#dc2626,#f97316)',
       category: 'Gym',
@@ -401,7 +401,7 @@ function LaptopShowcase() {
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     {['📘', '📸', '🐦'].map(s => <span key={s} style={{ fontSize: '.75rem' }}>{s}</span>)}
                   </div>
-                  <div style={{ fontSize: '.55rem', color: 'rgba(255,255,255,.4)' }}>© 2026 {site.name}. Powered by HospitalityCore</div>
+                  <div style={{ fontSize: '.55rem', color: 'rgba(255,255,255,.4)' }}>© 2026 {site.name}. Powered by Webrazeo</div>
                 </div>
               </div>
             </div>
@@ -535,6 +535,13 @@ export default function HomePage() {
 
   return (
     <div style={{ fontFamily: "'Inter',system-ui,sans-serif", background: '#fff', color: '#111', overflowX: 'hidden' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .footer-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
       {/* ── NAV ── */}
       <MobileNav navLinks={navLinks} activeSection={activeSection} navScrolled={navScrolled} />
@@ -557,7 +564,7 @@ export default function HomePage() {
         <div style={{ position: 'absolute', bottom: -100, left: -80, width: 400, height: 400, background: 'radial-gradient(circle,rgba(236,72,153,.14),transparent 68%)', borderRadius: '50%', pointerEvents: 'none' }} />
 
         {/* ── SPLIT LAYOUT ── */}
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', position: 'relative', zIndex: 1 }}>
 
           {/* LEFT — Content */}
           <div>
@@ -587,7 +594,7 @@ export default function HomePage() {
 
             <Reveal delay={180}>
               <p style={{ fontSize:'.97rem', color:'#4b5563', lineHeight:1.95, marginBottom:32, maxWidth:460 }}>
-                HospitalityCore gives every restaurant, hotel, pharmacy & local shop a <strong style={{ color:'#4f46e5' }}>professional website</strong> with menu, WhatsApp ordering, SEO & analytics — all in one place.
+                Webrazeo gives every restaurant, hotel, pharmacy & local shop a <strong style={{ color:'#4f46e5' }}>professional website</strong> with menu, WhatsApp ordering, SEO & analytics — all in one place.
               </p>
             </Reveal>
 
@@ -718,10 +725,54 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── CTA BANNER — After Hero ── */}
+      <section style={{ padding: '20px 6%', background: '#f8f7ff' }}>
+        <div style={{
+          maxWidth: 1100, margin: '0 auto',
+          background: 'linear-gradient(120deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%)',
+          borderRadius: 20,
+          padding: '24px 36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 24,
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 24px rgba(79,70,229,.10)',
+          border: '1.5px solid rgba(99,102,241,.15)',
+        }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#1e1b4b', marginBottom: 5 }}>
+              Transform Your Online Presence with a Professional Website
+            </div>
+            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
+              Get a high-converting website tailored for your business — live in under 5 minutes with Webrazeo.
+            </div>
+          </div>
+          <Link href="/signup" style={{
+            padding: '13px 28px',
+            background: '#1e1b4b',
+            color: '#fff',
+            borderRadius: 10,
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(30,27,75,.25)',
+            transition: 'background .2s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#312e81' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#1e1b4b' }}
+          >
+            Get Started Free →
+          </Link>
+        </div>
+      </section>
+
       {/* ── STATS ── */}
       <div ref={statsRef} style={{ background: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#1e1b4b 100%)', padding: '52px 6%', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%,rgba(99,102,241,.3),transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20, maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20, maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           {[
             { val: stores, suf: '+', label: 'Stores Created', icon: '🏪', pct: stores / 12 },
             { val: products, suf: '+', label: 'Menu Items Added', icon: '🍽️', pct: products / 180 },
@@ -826,7 +877,7 @@ export default function HomePage() {
       <HowItWorks />
 
       {/* ── PRICING ── */}
-      <section id="pricing" style={{ padding: '88px 6%', background: '#fff', marginTop: 0 }}>
+      <section id="pricing" style={{ padding: '88px 6%', background: '#fff' }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
           <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>Pricing</div>
           <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Start free, grow at your pace</h2>
@@ -881,18 +932,18 @@ export default function HomePage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section style={{ padding: '88px 0', background: 'linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 50%,#f0fdf4 100%)', overflow: 'hidden' }}>
+      <section style={{ padding: '88px 0', background: '#f8f7ff', overflow: 'hidden' }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 44, padding: '0 6%' }}>
           <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>Real stories</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Owners love HospitalityCore</h2>
+          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif', color: '#111' }}>Owners love Webrazeo</h2>
           <div className="divider" />
         </Reveal>
         <div style={{ overflow: 'hidden' }}>
           <div ref={testimonialScroll.wrapRef} className="scroll-wrap" style={{ overflow: 'hidden' }}>
             <div ref={testimonialScroll.trackRef} className="scroll-track" style={{ gap: 20, padding: '8px 24px' }}>
               {[...testimonials, ...testimonials, ...testimonials].map((t, i) => (
-                <div key={i} className="testi-card" style={{ background: '#fff', borderRadius: 18, padding: '26px', boxShadow: '0 4px 18px rgba(0,0,0,.06)', border: '1.5px solid #f0f0f0', flexShrink: 0, width: 320 }}>
-                  <div style={{ color: '#f59e0b', fontSize: '1rem', marginBottom: 12, letterSpacing: 2, background: 'linear-gradient(90deg,#f59e0b,#fbbf24,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', backgroundSize: '200% auto', animation: 'shimmer 2s linear infinite' }}>★★★★★</div>
+                <div key={i} className="testi-card" style={{ background: '#fff', borderRadius: 18, padding: '26px', boxShadow: '0 4px 20px rgba(79,70,229,.08)', border: '1.5px solid #e0e7ff', flexShrink: 0, width: 320 }}>
+                  <div style={{ color: '#f59e0b', fontSize: '1rem', marginBottom: 12, letterSpacing: 2 }}>★★★★★</div>
                   <p style={{ color: '#374151', fontSize: '.87rem', lineHeight: 1.85, marginBottom: 20, fontStyle: 'italic' }}>"{t.text}"</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
                     <div style={{ width: 40, height: 40, background: t.avBg, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '.95rem', flexShrink: 0 }}>{t.av}</div>
@@ -908,16 +959,104 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── CTA BANNER 1 ── */}
+      <section style={{ padding: '28px 6%', background: '#fff' }}>
+        <div style={{
+          maxWidth: 1100, margin: '0 auto',
+          background: 'linear-gradient(120deg, #e8eeff 0%, #dbeafe 60%, #c7d2fe 100%)',
+          borderRadius: 20,
+          padding: '28px 36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 24,
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 24px rgba(79,70,229,.10)',
+          border: '1.5px solid rgba(99,102,241,.12)',
+        }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#1e1b4b', marginBottom: 6 }}>
+              Launch Your Professional Website in Under 5 Minutes
+            </div>
+            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
+              Pick a template, add your content, go live — no coding needed with Webrazeo.
+            </div>
+          </div>
+          <Link href="/signup" style={{
+            padding: '13px 28px',
+            background: '#1e1b4b',
+            color: '#fff',
+            borderRadius: 10,
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(30,27,75,.25)',
+            transition: 'all .2s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#312e81' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#1e1b4b' }}
+          >
+            Start for Free →
+          </Link>
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section id="faq" style={{ padding: '88px 6%', background: '#fff' }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
           <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>FAQ</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Common questions, honest answers</h2>
+          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif', color: '#111' }}>Common questions, honest answers</h2>
           <div className="divider" />
         </Reveal>
-        <Reveal style={{ maxWidth: 660, margin: '0 auto' }}>
+        <Reveal style={{ maxWidth: 680, margin: '0 auto', background: '#fff', borderRadius: 20, border: '1px solid #e5e7eb', overflow: 'hidden', boxShadow: '0 4px 24px rgba(79,70,229,.06)' }}>
           {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
         </Reveal>
+      </section>
+
+      {/* ── CTA BANNER 2 ── */}
+      <section style={{ padding: '28px 6% 56px', background: '#fff' }}>
+        <div style={{
+          maxWidth: 1100, margin: '0 auto',
+          background: 'linear-gradient(120deg, #f5f3ff 0%, #ede9fe 50%, #ddd6fe 100%)',
+          borderRadius: 20,
+          padding: '28px 36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 24,
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 24px rgba(124,58,237,.10)',
+          border: '1.5px solid rgba(124,58,237,.14)',
+        }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#3b0764', marginBottom: 6 }}>
+              Already have a business? Bring it online today.
+            </div>
+            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
+              Join 1,200+ restaurants, hotels & local businesses growing with Webrazeo.
+            </div>
+          </div>
+          <Link href="/signup" style={{
+            padding: '13px 28px',
+            background: 'linear-gradient(135deg,#7c3aed,#4f46e5)',
+            color: '#fff',
+            borderRadius: 10,
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(124,58,237,.3)',
+            transition: 'all .2s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '.88' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+          >
+            Get Started Free →
+          </Link>
+        </div>
       </section>
 
       {/* ── CTA ── */}
@@ -946,9 +1085,9 @@ export default function HomePage() {
 
       {/* ── FOOTER ── */}
       <footer style={{ padding: '48px 6% 28px', background: '#0a0f1e', color: '#fff' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr 1fr', gap: 36, maxWidth: 1100, margin: '0 auto', paddingBottom: 36, borderBottom: '1px solid rgba(255,255,255,.07)' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr 1fr', gap: 36, maxWidth: 1100, margin: '0 auto', paddingBottom: 36, borderBottom: '1px solid rgba(255,255,255,.07)' }}>
           <div>
-            <div style={{ fontWeight: 900, fontSize: '1.15rem', fontFamily: '"Playfair Display",serif', marginBottom: 12 }}>Hospitality<span style={{ color: '#818cf8' }}>Core</span></div>
+            <div style={{ fontWeight: 900, fontSize: '1.15rem', fontFamily: '"Playfair Display",serif', marginBottom: 12 }}>Webra<span style={{ color: '#818cf8' }}>zeo</span></div>
             <p style={{ color: '#64748b', fontSize: '.83rem', lineHeight: 1.8, maxWidth: 240 }}>The easiest way for restaurants, hotels and local businesses to get online and grow.</p>
           </div>
           {[
@@ -969,7 +1108,7 @@ export default function HomePage() {
           ))}
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 22, maxWidth: 1100, margin: '0 auto', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ color: '#334155', fontSize: '.78rem' }}>© 2026 HospitalityCore. All rights reserved.</div>
+          <div style={{ color: '#334155', fontSize: '.78rem' }}>© 2026 Webrazeo. All rights reserved.</div>
           <div style={{ display: 'flex', gap: 16 }}>
             <Link href="/login" style={{ color: '#334155', textDecoration: 'none', fontSize: '.78rem', fontWeight: 600 }}>Log In</Link>
             <Link href="/signup" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '.78rem', fontWeight: 700 }}>Sign Up Free</Link>

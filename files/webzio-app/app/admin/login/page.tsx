@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../../../stores/authStore'
+import WebrazeoLogo from '../../../components/WebrazeoLogo'
 import toast from 'react-hot-toast'
 
 const C = {
@@ -109,46 +110,25 @@ export default function AdminLoginPage() {
                 {/* Logo */}
                 <div style={{
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: '32px'
-                }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        background: `linear-gradient(135deg, ${C.purple}, ${C.cyan})`,
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '2rem',
-                        boxShadow: `0 8px 24px rgba(124, 58, 237, 0.4)`,
-                        marginBottom: '16px'
-                    }}>
-                        ⚡
-                    </div>
-                </div>
-
-                <h1 style={{
-                    fontSize: '2rem',
-                    fontWeight: 900,
-                    color: C.text,
-                    textAlign: 'center',
-                    marginBottom: '8px',
-                    letterSpacing: '-0.02em'
-                }}>
-                    Super<span style={{ background: `linear-gradient(135deg, ${C.purple}, ${C.cyan})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Admin</span>
-                </h1>
-
-                <p style={{
-                    color: C.textMuted,
-                    textAlign: 'center',
-                    fontSize: '0.9rem',
                     marginBottom: '32px',
-                    fontWeight: 600
+                    gap: '12px'
                 }}>
-                    Master Control Panel Access
-                </p>
+                    <WebrazeoLogo size={40} showText={true} />
+                    <p style={{
+                        color: C.textMuted,
+                        textAlign: 'center',
+                        fontSize: '0.85rem',
+                        margin: 0,
+                        fontWeight: 600,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase'
+                    }}>
+                        Master Control Panel
+                    </p>
+                </div>
 
                 <form onSubmit={handleLogin}>
                     <div style={{ marginBottom: '20px' }}>

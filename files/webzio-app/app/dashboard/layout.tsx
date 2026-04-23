@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '../../stores/authStore'
 import { useThemeStore } from '../../stores/themeStore'
+import WebrazeoLogo from '../../components/WebrazeoLogo'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -48,8 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside style={{ width: 280, background: colors.sidebar, borderRight: `1px solid ${colors.sidebarBorder}`, position: 'fixed', top: 0, bottom: 0, left: 0, padding: '32px 24px', display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease' }}>
 
         <div style={{ fontWeight: 900, fontSize: '1.4rem', letterSpacing: '-0.03em', marginBottom: 48, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #3B82F6, #2563EB)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.1rem', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>S</div>
-          <span style={{ color: colors.text }}>Store</span><span style={{ color: colors.primary }}>Builder</span>
+          <WebrazeoLogo size={44} showText={true} />
         </div>
 
         <nav style={{ flex: 1 }}>

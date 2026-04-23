@@ -90,3 +90,33 @@ section, div[id] { scroll-margin-top: 72px; }
   60%  { left: 150%; opacity: 1; }
   100% { left: 150%; opacity: 0; }
 }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  /* Hero section */
+  section[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Nav links hide on mobile */
+  .desktop-nav { display: none !important; }
+
+  /* Pricing grid */
+  .pricing-grid { grid-template-columns: 1fr !important; }
+
+  /* Features grid */
+  .features-grid { grid-template-columns: 1fr !important; }
+
+  /* How it works card */
+  .hiw-card { grid-template-columns: 1fr !important; padding: 24px !important; }
+
+  /* Stats */
+  .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr !important; }
+
+  /* Dashboard sidebar */
+  .dashboard-sidebar { display: none !important; }
+  .dashboard-main { margin-left: 0 !important; }
+}

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '../../stores/authStore'
 import { AdminThemeProvider, useAdminTheme } from './theme'
+import WebrazeoLogo from '../../components/WebrazeoLogo'
 
 const NAV_ITEMS = [
   { label: 'Dashboard',  icon: '📊', path: '/admin' },
@@ -60,11 +61,14 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* Logo */}
         <div style={{ padding: collapsed?'20px 14px':'24px 20px', borderBottom:`1px solid ${C.border}`, display:'flex', alignItems:'center', gap:12, minHeight:72 }}>
-          <div style={{ width:36, height:36, minWidth:36, background:`linear-gradient(135deg,${C.purple},${C.cyan})`, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', animation:'glow 3s ease-in-out infinite', flexShrink:0 }}>⚡</div>
           {!collapsed && (
             <div style={{ animation:'slideIn .3s ease' }}>
-              <div style={{ fontWeight:900, fontSize:'.95rem', color:C.text, letterSpacing:'-.02em' }}>Super<span style={{ color:C.purple }}>Admin</span></div>
-              <div style={{ fontSize:'.6rem', color:C.textMuted, fontWeight:700, textTransform:'uppercase', letterSpacing:'.08em' }}>Master Control</div>
+              <WebrazeoLogo size={44} showText={true} />
+            </div>
+          )}
+          {collapsed && (
+            <div style={{ width:36, height:36, minWidth:36, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <WebrazeoLogo size={28} showText={false} variant="icon" />
             </div>
           )}
         </div>
