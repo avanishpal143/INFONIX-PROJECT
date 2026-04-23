@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         contactPhone: '+91 999 999 9999',
         contactEmail: 'hello@store.com',
         whatsappNumber: '919999999999',
-        footerDesc: `Created with StoreBuilder.`
+        footerDesc: `Created with Webrazeo.`
       }
     })
 
