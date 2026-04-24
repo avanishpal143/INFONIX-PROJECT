@@ -90,6 +90,7 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         input:focus, textarea:focus { border-color: #6366f1 !important; }
+        * { transition: none !important; }
       `}</style>
 
       {/* Top Bar */}
@@ -112,16 +113,16 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
       </div>
 
       {/* Main Content */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
         {/* Left Sidebar - Sections */}
-        <div style={{ width: 240, background: '#1a1f2e', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ width: 240, minWidth: 240, maxWidth: 240, background: '#1a1f2e', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '16px', borderBottom: '1px solid #334155' }}>
             <div style={{ fontSize: '.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.05em' }}>CUSTOMIZATION</div>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
             {SECTIONS.map(s => (
               <button key={s.key} onClick={() => setActiveSection(s.key)}
-                style={{ width: '100%', textAlign: 'left', padding: '12px 14px', borderRadius: 8, border: 'none', background: activeSection === s.key ? '#6366f1' : 'transparent', color: activeSection === s.key ? '#fff' : '#94a3b8', fontSize: '.85rem', fontWeight: activeSection === s.key ? 600 : 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, transition: 'all 0.15s' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '12px 14px', borderRadius: 8, border: 'none', background: activeSection === s.key ? '#6366f1' : 'transparent', color: activeSection === s.key ? '#fff' : '#94a3b8', fontSize: '.85rem', fontWeight: activeSection === s.key ? 600 : 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                 <span style={{ fontSize: '1.1rem' }}>{s.icon}</span>
                 {s.label}
               </button>
@@ -130,7 +131,7 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
         </div>
 
         {/* Middle - Editor */}
-        <div style={{ width: 400, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        <div style={{ width: 400, minWidth: 400, maxWidth: 400, background: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #334155' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: '1.2rem' }}>{SECTIONS.find(s => s.key === activeSection)?.icon}</span>
@@ -218,7 +219,7 @@ export default function StoreEditPage({ params }: { params: { storeId: string } 
         </div>
 
         {/* Right - Preview */}
-        <div style={{ flex: 1, background: '#0f172a', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: 'calc(100vw - 640px)', minWidth: 600, background: '#0f172a', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {/* Preview Header */}
           <div style={{ background: '#1e293b', padding: '16px 20px', borderBottom: '1px solid #334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
             <div>
