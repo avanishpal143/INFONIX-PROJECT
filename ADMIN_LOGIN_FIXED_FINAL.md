@@ -26,7 +26,7 @@ The admin layout (`app/admin/layout.tsx`) has a `useEffect` that checks if the u
 ### 3. Better User Experience
 - Smooth loading transitions
 - No flash of content
-- Clear feedback during authentication
+- /Clear feedback during authentication
 
 ## How to Test
 
@@ -46,3 +46,4 @@ Password: admin123
 
 ## Status
 ✅ FIXED - Login now properly redirects to admin dashboard
+-*

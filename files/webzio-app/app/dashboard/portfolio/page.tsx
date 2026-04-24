@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../../../stores/authStore'
 
 interface PortfolioTemplate {
@@ -18,31 +19,50 @@ interface PortfolioTemplate {
     templateType: string
 }
 
+interface Store {
+    _id: string
+    siteName: string
+    slug: string
+}
+
 export default function PortfolioPage() {
+    const router = useRouter()
     const { token } = useAuthStore()
     const [templates, setTemplates] = useState<PortfolioTemplate[]>([])
+    const [stores, setStores] = useState<Store[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [showStoreSelector, setShowStoreSelector] = useState(false)
+    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
 
     useEffect(() => {
-        async function loadPortfolioTemplates() {
+        async function loadData() {
             try {
-                const res = await fetch('/api/admin/templates?type=portfolio', {
+                // Load portfolio templates
+                const templatesRes = await fetch('/api/admin/templates?type=portfolio', {
                     headers: { Authorization: `Bearer ${token}` }
                 })
-                const data = await res.json()
-                if (data.success) {
-                    // Filter only active portfolio templates for users
-                    const activeTemplates = data.templates.filter((t: PortfolioTemplate) => t.isActive)
+                const templatesData = await templatesRes.json()
+                if (templatesData.success) {
+                    const activeTemplates = templatesData.templates.filter((t: PortfolioTemplate) => t.isActive)
                     setTemplates(activeTemplates)
                 }
+
+                // Load user's stores
+                const storesRes = await fetch('/api/websites', {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                const storesData = await storesRes.json()
+                if (storesData.success) {
+                    setStores(storesData.websites)
+                }
             } catch (error) {
-                console.error('Failed to load portfolio templates:', error)
+                console.error('Failed to load data:', error)
             } finally {
                 setLoading(false)
             }
         }
-        loadPortfolioTemplates()
+        loadData()
     }, [token])
 
     const filtered = templates.filter(t =>
@@ -134,10 +154,17 @@ export default function PortfolioPage() {
 
                             {/* Use Button */}
                             <Link
-                                href={`/dashboard/stores?openModal=true&template=${t._id}`}
+                                href={stores.length > 0 ? `/dashboard/stores/${stores[0]._id}/edit` : `/dashboard/stores?openModal=true&template=${t._id}`}
                                 style={{ display: 'block', textAlign: 'center', padding: '9px', background: 'linear-gradient(135deg,#EC4899,#9D174D)', color: '#fff', borderRadius: 8, textDecoration: 'none', fontWeight: 700, fontSize: '.8rem', boxShadow: '0 3px 10px rgba(236,72,153,.25)' }}
+                                onClick={(e) => {
+                                    if (stores.length > 1) {
+                                        e.preventDefault()
+                                        setSelectedTemplate(t._id)
+                                        setShowStoreSelector(true)
+                                    }
+                                }}
                             >
-                                Use This Template →
+                                {stores.length > 0 ? 'Configure Store →' : 'Use This Template →'}
                             </Link>
                         </div>
                     </div>
@@ -149,6 +176,68 @@ export default function PortfolioPage() {
                     <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🔍</div>
                     <div style={{ fontWeight: 700, marginBottom: 6 }}>No portfolio templates found</div>
                     <div style={{ fontSize: '.85rem' }}>Try a different search or check back later</div>
+                </div>
+            )}
+
+            {/* Store Selector Modal */}
+            {showStoreSelector && (
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowStoreSelector(false)}>
+                    <div style={{ background: '#fff', borderRadius: 16, padding: 32, maxWidth: 500, width: '90%', maxHeight: '80vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', marginBottom: 8 }}>Select Store to Configure</h2>
+                        <p style={{ color: '#64748b', fontSize: '.9rem', marginBottom: 24 }}>Choose which store you want to configure with this template</p>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            {stores.map(store => (
+                                <Link
+                                    key={store._id}
+                                    href={`/dashboard/stores/${store._id}/edit`}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '16px',
+                                        border: '2px solid #e5e7eb',
+                                        borderRadius: 12,
+                                        textDecoration: 'none',
+                                        transition: 'all .2s',
+                                        background: '#fff'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = '#EC4899'
+                                        e.currentTarget.style.background = '#fdf2f8'
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderColor = '#e5e7eb'
+                                        e.currentTarget.style.background = '#fff'
+                                    }}
+                                >
+                                    <div>
+                                        <div style={{ fontSize: '.95rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>{store.siteName}</div>
+                                        <div style={{ fontSize: '.75rem', color: '#64748b' }}>/{store.slug}</div>
+                                    </div>
+                                    <div style={{ fontSize: '1.2rem' }}>→</div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => setShowStoreSelector(false)}
+                            style={{
+                                marginTop: 20,
+                                width: '100%',
+                                padding: '12px',
+                                background: '#f1f5f9',
+                                border: 'none',
+                                borderRadius: 10,
+                                color: '#64748b',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                fontSize: '.9rem'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
