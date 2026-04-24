@@ -175,8 +175,35 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               <div style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, boxShadow: `0 0 8px ${C.green}`, animation: 'pulse2 2s infinite' }} />
               <span style={{ fontSize: '.75rem', color: C.textMuted, fontWeight: 600 }}>Online</span>
             </div>
-            <Link href="/dashboard" style={{ padding: '7px 14px', background: `${C.cyan}15`, border: `1px solid ${C.cyan}35`, borderRadius: 8, color: C.cyan, fontSize: '.75rem', fontWeight: 700, textDecoration: 'none' }}>
-              → User Panel
+            <Link
+              href="/dashboard"
+              className="admin-btn"
+              style={{
+                padding: '9px 18px',
+                background: `linear-gradient(135deg, ${C.cyan}, ${C.blue})`,
+                border: 'none',
+                borderRadius: 10,
+                color: '#fff',
+                fontSize: '.8rem',
+                fontWeight: 800,
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: `0 4px 12px ${C.cyan}40`,
+                transition: 'all .2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = `0 6px 16px ${C.cyan}60`
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = `0 4px 12px ${C.cyan}40`
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>👤</span>
+              User Panel
             </Link>
           </div>
         </div>
