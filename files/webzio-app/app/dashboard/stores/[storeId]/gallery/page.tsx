@@ -1,150 +1,376 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '../../../../../stores/authStore'
 import { useParams } from 'next/navigation'
+import { useAuthStore } from '../../../../../stores/authStore'
 import toast from 'react-hot-toast'
 
-const C = {
-  pink: '#EC4899', card: '#111827', border: 'rgba(59,130,246,0.15)',
-  text: '#E2E8F0', textMuted: '#6B7280', red: '#EF4444', blue: '#3B82F6',
-}
-const MAX = 5
+const MAX_IMAGES = 5
 
 export default function GalleryPage() {
-  const { token } = useAuthStore()
   const params = useParams()
-  const storeId = params?.storeId as string
-  const [gallery, setGallery] = useState<string[]>([])
+  const { token } = useAuthStore()
+  const [images, setImages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [newUrl, setNewUrl] = useState('')
-  const [adding, setAdding] = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [newImageUrl, setNewImageUrl] = useState('')
 
-  const load = async () => {
-    setLoading(true)
-    const res = await fetch(`/api/store/${storeId}/gallery`, { headers: { Authorization: `Bearer ${token}` } })
-    const data = await res.json()
-    if (data.success) setGallery(data.gallery)
+  useEffect(() => {
+    loadGallery()
+  }, [])
+
+  const loadGallery = async () => {
+    try {
+      const res = await fetch(`/api/store/${params.storeId}/gallery`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (data.success) setImages(data.images)
+    } catch (error) {
+      console.error('Failed to load gallery')
+    }
     setLoading(false)
   }
-  useEffect(() => { load() }, [storeId])
 
-  const addImage = async () => {
-    if (!newUrl.trim()) return toast.error('Please enter an image URL')
-    if (gallery.length >= MAX) return toast.error(`Maximum ${MAX} images allowed`)
-    setAdding(true)
-    const res = await fetch(`/api/store/${storeId}/gallery`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ imageUrl: newUrl.trim() }),
-    })
-    const data = await res.json()
-    if (data.success) { setGallery(data.gallery); setNewUrl(''); toast.success('Image added!') }
-    else toast.error(data.message || 'Failed')
-    setAdding(false)
+  const handleAddImage = async () => {
+    if (!newImageUrl.trim()) {
+      toast.error('Please enter an image URL')
+      return
+    }
+    if (images.length >= MAX_IMAGES) {
+      toast.error(`Maximum ${MAX_IMAGES} images allowed`)
+      return
+    }
+
+    setUploading(true)
+    try {
+      const res = await fetch(`/api/store/${params.storeId}/gallery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ imageUrl: newImageUrl })
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('Image added successfully! 🎉')
+        setNewImageUrl('')
+        loadGallery()
+      } else {
+        toast.error(data.message || 'Failed to add image')
+      }
+    } catch (error) {
+      toast.error('An error occurred')
+    }
+    setUploading(false)
   }
 
-  const deleteImage = async (url: string) => {
-    setDeleting(url)
-    const res = await fetch(`/api/store/${storeId}/gallery`, {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ imageUrl: url }),
-    })
-    const data = await res.json()
-    if (data.success) { setGallery(data.gallery); toast.success('Image removed') }
-    setDeleting(null)
+  const handleDeleteImage = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this image?')) return
+
+    try {
+      const res = await fetch(`/api/store/${params.storeId}/gallery/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('Image deleted')
+        loadGallery()
+      } else {
+        toast.error(data.message || 'Failed to delete')
+      }
+    } catch (error) {
+      toast.error('An error occurred')
+    }
   }
 
-  const used = gallery.length
+  if (loading) {
+    return (
+      <div style={{ padding: '100px 0', textAlign: 'center' }}>
+        <div style={{ fontSize: '2.5rem', marginBottom: 16, animation: 'spin 1s linear infinite' }}>⚙️</div>
+        <div style={{ color: '#64748b', fontSize: '0.95rem', fontWeight: 600 }}>Loading gallery...</div>
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
 
   return (
-    <div>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: C.text }}>🖼️ Media Gallery</h1>
-        <p style={{ color: C.textMuted, fontSize: '0.85rem', marginTop: 4 }}>Upload and manage your store images</p>
-      </div>
-
-      {/* Usage Bar */}
-      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22, marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: C.text }}>Storage Usage</span>
-          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: used >= MAX ? C.red : C.pink }}>{used} / {MAX} images</span>
-        </div>
-        <div style={{ height: 8, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${(used / MAX) * 100}%`, background: used >= MAX ? C.red : `linear-gradient(90deg, #EC4899, #9D174D)`, borderRadius: 4, transition: 'width 0.5s ease' }} />
-        </div>
-        <p style={{ fontSize: '0.75rem', color: C.textMuted, marginTop: 8 }}>
-          {used >= MAX ? '⛔ Maximum images reached. Delete one to add more.' : `${MAX - used} image slot${MAX - used !== 1 ? 's' : ''} remaining.`}
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0f172a', marginBottom: 8, letterSpacing: '-0.02em' }}>
+          🖼️ Media Gallery
+        </h1>
+        <p style={{ color: '#64748b', fontSize: '0.95rem' }}>
+          Upload and manage your store images (Maximum {MAX_IMAGES} images)
         </p>
       </div>
 
-      {/* Add Image */}
-      {used < MAX && (
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22, marginBottom: 24 }}>
-          <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: C.text, marginBottom: 14 }}>➕ Add Image</h3>
-          <div style={{ display: 'flex', gap: 10 }}>
+      {/* Upload Section */}
+      {images.length < MAX_IMAGES && (
+        <div style={{
+          background: '#fff',
+          border: '2px dashed #e2e8f0',
+          borderRadius: 16,
+          padding: 32,
+          marginBottom: 32,
+          transition: 'all 0.2s'
+        }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = '#3B82F6'
+            e.currentTarget.style.background = '#f8fafc'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = '#e2e8f0'
+            e.currentTarget.style.background = '#fff'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            <div style={{
+              width: 48,
+              height: 48,
+              background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)'
+            }}>
+              📸
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>Add New Image</h3>
+              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Paste your image URL below</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
             <input
-              value={newUrl} onChange={e => setNewUrl(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addImage()}
-              placeholder="Paste image URL (https://...)"
-              style={{ flex: 1, padding: '11px 14px', background: '#0D1117', border: `1px solid ${C.border}`, borderRadius: 9, color: C.text, fontSize: '0.85rem', outline: 'none' }}
+              value={newImageUrl}
+              onChange={e => setNewImageUrl(e.target.value)}
+              placeholder="Enter image URL (https://...)"
+              style={{
+                flex: 1,
+                padding: '14px 18px',
+                background: '#f8fafc',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: 10,
+                color: '#0f172a',
+                outline: 'none',
+                fontSize: '0.95rem',
+                transition: 'all 0.2s'
+              }}
+              onFocus={e => {
+                e.currentTarget.style.borderColor = '#3B82F6'
+                e.currentTarget.style.background = '#fff'
+              }}
+              onBlur={e => {
+                e.currentTarget.style.borderColor = '#e2e8f0'
+                e.currentTarget.style.background = '#f8fafc'
+              }}
+              onKeyPress={e => e.key === 'Enter' && handleAddImage()}
             />
-            <button onClick={addImage} disabled={adding} style={{ padding: '11px 22px', background: 'linear-gradient(135deg,#EC4899,#9D174D)', border: 'none', borderRadius: 9, color: '#fff', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              {adding ? 'Adding...' : '+ Add Image'}
+            <button
+              onClick={handleAddImage}
+              disabled={uploading}
+              style={{
+                padding: '14px 32px',
+                background: uploading ? '#94a3b8' : 'linear-gradient(135deg, #3B82F6, #2563EB)',
+                border: 'none',
+                borderRadius: 10,
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: uploading ? 'not-allowed' : 'pointer',
+                boxShadow: uploading ? 'none' : '0 4px 14px rgba(59, 130, 246, 0.3)',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
+              }}
+              onMouseEnter={e => !uploading && (e.currentTarget.style.transform = 'translateY(-2px)')}
+              onMouseLeave={e => !uploading && (e.currentTarget.style.transform = 'translateY(0)')}
+            >
+              {uploading ? (
+                <>⏳ Adding...</>
+              ) : (
+                <>➕ Add Image</>
+              )}
             </button>
           </div>
-          {newUrl && (
-            <div style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', height: 100, background: 'rgba(255,255,255,0.02)', border: `1px solid ${C.border}` }}>
-              <img src={newUrl} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => (e.currentTarget.style.display = 'none')} />
-            </div>
-          )}
+
+          <div style={{
+            padding: '12px 16px',
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10
+          }}>
+            <span style={{ fontSize: '1.2rem' }}>💡</span>
+            <span style={{ fontSize: '0.85rem', color: '#1e40af', fontWeight: 500 }}>
+              Use image hosting services like Imgur, Cloudinary, or your own server
+            </span>
+          </div>
         </div>
       )}
+
+      {/* Images Count */}
+      <div style={{
+        marginBottom: 24,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 20px',
+        background: '#fff',
+        borderRadius: 12,
+        border: '1px solid #e2e8f0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700 }}>
+            Gallery Status:
+          </div>
+          <div style={{
+            padding: '6px 14px',
+            background: images.length >= MAX_IMAGES ? '#fef3c7' : '#dbeafe',
+            color: images.length >= MAX_IMAGES ? '#92400e' : '#1e40af',
+            borderRadius: 8,
+            fontSize: '0.85rem',
+            fontWeight: 700
+          }}>
+            {images.length} / {MAX_IMAGES} images
+          </div>
+        </div>
+        {images.length >= MAX_IMAGES && (
+          <div style={{
+            fontSize: '0.85rem',
+            color: '#f59e0b',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+            <span>⚠️</span> Maximum limit reached
+          </div>
+        )}
+      </div>
 
       {/* Gallery Grid */}
-      {loading ? <p style={{ color: C.textMuted }}>Loading gallery...</p> : (
-        <div>
-          <p style={{ fontSize: '0.72rem', fontWeight: 800, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
-            Gallery ({gallery.length} image{gallery.length !== 1 ? 's' : ''})
+      {images.length === 0 ? (
+        <div style={{
+          background: '#fff',
+          border: '2px dashed #e2e8f0',
+          borderRadius: 20,
+          padding: '80px 40px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '5rem', marginBottom: 20, opacity: 0.5 }}>🖼️</div>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 10 }}>No Images Yet</h3>
+          <p style={{ color: '#64748b', fontSize: '1rem', marginBottom: 24 }}>
+            Add your first image to showcase your products or services
           </p>
-          {gallery.length === 0 ? (
-            <div style={{ background: C.card, border: `2px dashed rgba(236,72,153,0.2)`, borderRadius: 14, padding: '48px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🖼️</div>
-              <p style={{ color: C.textMuted, fontSize: '0.88rem' }}>No images yet. Add your first gallery image above.</p>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
-              {gallery.map((url, i) => (
-                <div key={i} style={{ borderRadius: 12, overflow: 'hidden', position: 'relative', border: `1px solid ${C.border}`, background: C.card, cursor: 'pointer', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src={url} alt={`Gallery ${i + 1}`} onClick={() => setPreview(url)} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: 8, transition: 'background 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.5)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0)')}>
-                    <button onClick={() => setPreview(url)} style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', backdropFilter: 'blur(4px)' }}>View</button>
-                    <button onClick={() => deleteImage(url)} disabled={deleting === url} style={{ padding: '5px 8px', background: 'rgba(239,68,68,0.8)', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.7rem', cursor: 'pointer' }}>
-                      {deleting === url ? '...' : '🗑'}
-                    </button>
-                  </div>
-                  <div style={{ position: 'absolute', top: 8, left: 8, width: 22, height: 22, background: 'rgba(236,72,153,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900, color: '#fff' }}>{i + 1}</div>
-                </div>
-              ))}
-              {/* Empty slots */}
-              {Array.from({ length: MAX - gallery.length }).map((_, i) => (
-                <div key={`empty-${i}`} style={{ borderRadius: 12, border: `2px dashed rgba(236,72,153,0.15)`, background: 'rgba(236,72,153,0.02)', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6 }}>
-                  <span style={{ fontSize: '1.5rem', opacity: 0.3 }}>+</span>
-                  <span style={{ fontSize: '0.65rem', color: C.textMuted }}>Empty slot</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <div style={{
+            display: 'inline-block',
+            padding: '10px 20px',
+            background: '#f1f5f9',
+            borderRadius: 8,
+            fontSize: '0.85rem',
+            color: '#64748b',
+            fontWeight: 600
+          }}>
+            👆 Use the form above to get started
+          </div>
         </div>
-      )}
-
-      {/* Preview Modal */}
-      {preview && (
-        <div onClick={() => setPreview(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(8px)', cursor: 'zoom-out' }}>
-          <img src={preview} alt="Preview" style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 12, boxShadow: '0 30px 80px rgba(0,0,0,0.8)' }} onClick={e => e.stopPropagation()} />
-          <button onClick={() => setPreview(null)} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 40, height: 40, color: '#fff', fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+          {images.map((img, index) => (
+            <div key={img._id} style={{
+              background: '#fff',
+              border: '1.5px solid #e2e8f0',
+              borderRadius: 16,
+              overflow: 'hidden',
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-4px)'
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'
+                e.currentTarget.style.borderColor = '#3B82F6'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'
+                e.currentTarget.style.borderColor = '#e2e8f0'
+              }}
+            >
+              <div style={{
+                aspectRatio: '16/9',
+                overflow: 'hidden',
+                background: '#f8fafc',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  background: 'rgba(0,0,0,0.6)',
+                  color: '#fff',
+                  padding: '4px 10px',
+                  borderRadius: 6,
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  backdropFilter: 'blur(8px)'
+                }}>
+                  #{index + 1}
+                </div>
+                <img
+                  src={img.imageUrl}
+                  alt={img.title || 'Gallery image'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23f8fafc" width="400" height="300"/%3E%3Ctext fill="%2394A3B8" font-family="Arial" font-size="16" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E❌ Image not found%3C/text%3E%3C/svg%3E'
+                  }}
+                />
+              </div>
+              <div style={{ padding: 16 }}>
+                <div style={{
+                  fontSize: '0.85rem',
+                  color: '#64748b',
+                  marginBottom: 12,
+                  fontWeight: 600
+                }}>
+                  {img.title || 'Untitled Image'}
+                </div>
+                <button
+                  onClick={() => handleDeleteImage(img._id)}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    background: '#fee2e2',
+                    border: '1px solid #fecaca',
+                    borderRadius: 8,
+                    color: '#ef4444',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#fecaca'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = '#fee2e2'
+                  }}
+                >
+                  🗑️ Delete Image
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
