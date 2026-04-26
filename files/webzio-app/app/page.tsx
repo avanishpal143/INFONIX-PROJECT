@@ -4,6 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ALL_TEMPLATES } from '../lib/templates'
 import MobileNav from '../components/MobileNav'
 import HowItWorks from '../components/HowItWorks'
+import Achievement from '../components/Achievement'
+import TemplatesSection from '../components/TemplatesSection'
+import WhatYouGet from '../components/WhatYouGet'
+import PricingSection from '../components/PricingSection'
+import FeaturedUsers from '../components/FeaturedUsers'
 
 /* ─────────────────────────────────────────
    HOOKS
@@ -446,10 +451,7 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
 
-  const tplRow1 = useAutoScroll(0.5, 'left')
-  const tplRow2 = useAutoScroll(0.4, 'right')
   const testimonialScroll = useAutoScroll(0.45, 'left')
-  const tickerScroll = useAutoScroll(0.8, 'left')
 
   // nav scroll effect + back-to-top + active section
   useEffect(() => {
@@ -528,8 +530,6 @@ export default function HomePage() {
     { q: 'Is the free plan really free forever?', a: 'Yes. The Starter plan is completely free with 1 store and 10 items. No credit card needed. Upgrade only when you want more features.' },
     { q: 'What types of businesses can use this?', a: 'Restaurants, hotels, cafes, pharmacies, gyms, salons, freelancers, shops — basically any business that wants an online presence without a big budget.' },
   ]
-
-  const scrollTemplates = [...ALL_TEMPLATES, ...ALL_TEMPLATES]
 
   const navLinks: [string, string][] = [['Features', '#features'], ['Templates', '#templates'], ['How it Works', '#how'], ['Pricing', '#pricing']]
 
@@ -725,211 +725,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA BANNER — After Hero ── */}
-      <section style={{ padding: '20px 6%', background: '#f8f7ff' }}>
-        <div style={{
-          maxWidth: 1100, margin: '0 auto',
-          background: 'linear-gradient(120deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%)',
-          borderRadius: 20,
-          padding: '24px 36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 24,
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 24px rgba(79,70,229,.10)',
-          border: '1.5px solid rgba(99,102,241,.15)',
-        }}>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#1e1b4b', marginBottom: 5 }}>
-              Transform Your Online Presence with a Professional Website
-            </div>
-            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
-              Get a high-converting website tailored for your business — live in under 5 minutes with Webrazeo.
-            </div>
-          </div>
-          <Link href="/signup" style={{
-            padding: '13px 28px',
-            background: '#1e1b4b',
-            color: '#fff',
-            borderRadius: 10,
-            textDecoration: 'none',
-            fontWeight: 700,
-            fontSize: '.9rem',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-            boxShadow: '0 4px 14px rgba(30,27,75,.25)',
-            transition: 'background .2s',
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#312e81' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#1e1b4b' }}
-          >
-            Get Started Free →
-          </Link>
-        </div>
-      </section>
-
-      {/* ── STATS ── */}
-      <div ref={statsRef} style={{ background: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#1e1b4b 100%)', padding: '52px 6%', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%,rgba(99,102,241,.3),transparent 70%)', pointerEvents: 'none' }} />
-        <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20, maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          {[
-            { val: stores, suf: '+', label: 'Stores Created', icon: '🏪', pct: stores / 12 },
-            { val: products, suf: '+', label: 'Menu Items Added', icon: '🍽️', pct: products / 180 },
-            { val: views, suf: 'K+', label: 'Monthly Visitors', icon: '👁️', pct: views / 5 },
-            { val: uptime, suf: '%', label: 'Uptime Guaranteed', icon: '⚡', pct: uptime },
-          ].map((s, i) => (
-            <div key={i} style={{ animation: statsVisible ? `popIn .5s ease ${i * 120}ms both` : 'none' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: 6 }}>{s.icon}</div>
-              <div style={{ fontSize: 'clamp(1.6rem,3vw,2.3rem)', fontWeight: 900, color: '#fff', fontFamily: '"Playfair Display",serif', lineHeight: 1 }}>
-                {s.val.toLocaleString()}{s.suf}
-              </div>
-              <div style={{ fontSize: '.78rem', color: '#c7d2fe', marginTop: 5, fontWeight: 500, marginBottom: 10 }}>{s.label}</div>
-              {/* progress bar */}
-              <div style={{ height: 4, background: 'rgba(255,255,255,.15)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'linear-gradient(90deg,#818cf8,#ec4899)', borderRadius: 2, width: statsVisible ? `${Math.min(s.pct, 100)}%` : '0%', transition: 'width 2s cubic-bezier(.4,0,.2,1)' }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── TICKER ── */}
-      <div className="animated-bg" style={{ padding: '12px 0', overflow: 'hidden' }}>
-        <div ref={tickerScroll.wrapRef} className="scroll-wrap" style={{ overflow: 'hidden' }}>
-          <div ref={tickerScroll.trackRef} className="scroll-track">
-            {Array(3).fill(['🍴 Restaurant Menus', '🏨 Hotel Rooms', '💊 Pharmacy Catalog', '💪 Gym Classes', '💅 Salon Services', '🏠 Real Estate', '📸 Photography', '👗 Clothing Store', '🛒 Grocery Shop', '🏥 Medical Clinic', '🚀 Startup Landing', '👨‍💻 Developer Portfolio']).flat().map((t, i) => (
-              <span key={i} style={{ color: '#fff', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.07em', padding: '0 24px', whiteSpace: 'nowrap' }}>{t} &nbsp;·</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── TEMPLATES ── */}
-      <section id="templates" style={{ padding: '88px 0', background: '#fafafa', overflow: 'hidden' }}>
-        <Reveal style={{ textAlign: 'center', marginBottom: 44, padding: '0 6%' }}>
-          <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>25 Templates</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif', letterSpacing: '-.02em' }}>A template for every business</h2>
-          <div className="divider" />
-          <p style={{ color: '#6b7280', marginTop: 16, fontSize: '.93rem', maxWidth: 500, margin: '16px auto 0' }}>From restaurants to pharmacies, gyms to portfolios — pick a template and go live in minutes</p>
-        </Reveal>
-
-        {[tplRow1, tplRow2].map((row, ri) => (
-          <div key={ri} style={{ overflow: 'hidden', marginBottom: ri === 0 ? 16 : 0 }}>
-            <div ref={row.wrapRef} className="scroll-wrap" style={{ overflow: 'hidden' }}>
-              <div ref={row.trackRef} className="scroll-track" style={{ gap: 16, padding: '8px 24px' }}>
-                {scrollTemplates.slice(0, 50).map((t, i) => (
-                  <div key={i} className="tpl-card">
-                    <div style={{ height: 130, background: t.color, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', position: 'relative', padding: 16 }}>
-                      {t.popular && <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(245,158,11,.9)', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: '.58rem', fontWeight: 800, animation: 'blink 2s ease-in-out infinite' }}>🔥 Popular</div>}
-                      <div style={{ position: 'absolute', top: 10, left: 12, background: 'rgba(255,255,255,.2)', padding: '2px 10px', borderRadius: 50, fontSize: '.6rem', fontWeight: 700 }}>{t.category}</div>
-                      <div style={{ fontSize: '2.4rem', marginBottom: 6 }}>{t.icon}</div>
-                      <div style={{ fontWeight: 800, fontSize: '.82rem', textAlign: 'center', fontFamily: '"Playfair Display",serif' }}>{t.name}</div>
-                      {/* hover overlay */}
-                      <div className="tpl-overlay">
-                        <Link href="/signup" style={{ padding: '8px 18px', background: '#fff', color: '#4f46e5', borderRadius: 8, textDecoration: 'none', fontWeight: 700, fontSize: '.78rem' }}>Use Template →</Link>
-                      </div>
-                    </div>
-                    <div style={{ padding: '12px 14px' }}>
-                      <div style={{ fontSize: '.73rem', color: '#6b7280', lineHeight: 1.6, marginBottom: 8 }}>{t.desc}</div>
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {t.tags.map(tag => (
-                          <span key={tag} style={{ fontSize: '.6rem', fontWeight: 700, padding: '2px 8px', borderRadius: 50, background: '#f0f0ff', color: '#4f46e5' }}>{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-
-        <Reveal style={{ textAlign: 'center', marginTop: 36 }}>
-          <Link href="/signup" className="btn-primary" style={{ padding: '13px 32px', background: 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: '.95rem', fontWeight: 700, boxShadow: '0 6px 20px rgba(79,70,229,.3)', display: 'inline-block' }}>
-            Browse All 25 Templates →
-          </Link>
-        </Reveal>
-      </section>
-
-      {/* ── FEATURES ── */}
-      <section id="features" style={{ padding: '88px 6%', background: '#fff' }}>
-        <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
-          <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>What you get</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif', letterSpacing: '-.02em' }}>Everything your business needs</h2>
-          <div className="divider" />
-          <p style={{ color: '#6b7280', marginTop: 16, fontSize: '.93rem', maxWidth: 460, margin: '16px auto 0' }}>Simple tools that actually make a difference for local businesses</p>
-        </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 18, maxWidth: 1060, margin: '0 auto' }}>
-          {features.map((f, i) => (
-            <Reveal key={i} delay={i * 60}>
-              <div className="card feat-card" style={{ padding: '26px', borderRadius: 14, background: f.color, border: `2px solid ${f.border}`, boxShadow: `0 4px 20px ${f.border}44`, height: '100%' }}>
-                <div className="feat-icon" style={{ fontSize: '2rem', marginBottom: 12, width: 48, height: 48, background: `${f.border}33`, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{f.icon}</div>
-                <div style={{ fontWeight: 800, fontSize: '.95rem', marginBottom: 7, color: f.accent }}>{f.title}</div>
-                <div style={{ color: '#6b7280', fontSize: '.84rem', lineHeight: 1.8 }}>{f.desc}</div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      {/* ── OUR GREAT ACHIEVEMENT ── */}
+      <Achievement />
 
       {/* ── HOW IT WORKS ── */}
       <HowItWorks />
 
+      {/* ── TEMPLATES ── */}
+      <TemplatesSection />
+
+      {/* ── WHAT YOU GET ── */}
+      <WhatYouGet />
+
       {/* ── PRICING ── */}
-      <section id="pricing" style={{ padding: '88px 6%', background: '#fff' }}>
-        <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
-          <div className="tag" style={{ background: '#eef2ff', color: '#4f46e5', marginBottom: 14 }}>Pricing</div>
-          <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.5rem)', fontWeight: 900, fontFamily: '"Playfair Display",serif' }}>Start free, grow at your pace</h2>
-          <div className="divider" />
-          <p style={{ color: '#6b7280', marginTop: 16, fontSize: '.93rem' }}>No hidden fees. Cancel anytime.</p>
+      <PricingSection />
 
-          {/* billing toggle */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginTop: 24, background: '#f1f5f9', borderRadius: 50, padding: '6px 8px' }}>
-            <button onClick={() => setBillingYearly(false)} style={{ padding: '7px 20px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '.82rem', background: !billingYearly ? '#fff' : 'transparent', color: !billingYearly ? '#4f46e5' : '#6b7280', boxShadow: !billingYearly ? '0 2px 8px rgba(0,0,0,.08)' : 'none', transition: 'all .25s' }}>Monthly</button>
-            <button onClick={() => setBillingYearly(true)} style={{ padding: '7px 20px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '.82rem', background: billingYearly ? '#fff' : 'transparent', color: billingYearly ? '#4f46e5' : '#6b7280', boxShadow: billingYearly ? '0 2px 8px rgba(0,0,0,.08)' : 'none', transition: 'all .25s', display: 'flex', alignItems: 'center', gap: 6 }}>
-              Yearly <span style={{ background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: '.65rem', fontWeight: 800 }}>Save 33%</span>
-            </button>
-          </div>
-        </Reveal>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(270px,1fr))', gap: 24, maxWidth: 940, margin: '0 auto', alignItems: 'center' }}>
-          {pricingBase.map((p, i) => (
-            <Reveal key={i} delay={i * 100}>
-              <div className={`card${p.popular ? ' pro-card' : ''}`} style={{ borderRadius: 20, padding: '32px 28px', background: p.bg, border: `1.5px solid ${p.border}`, boxShadow: p.popular ? '0 20px 52px rgba(79,70,229,.28)' : '0 4px 16px rgba(0,0,0,.05)', position: 'relative', transform: p.popular ? 'scale(1.04)' : 'scale(1)' }}>
-                {p.popular && (
-                  <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,#f59e0b,#f97316)', color: '#fff', padding: '4px 16px', borderRadius: 50, fontSize: '.68rem', fontWeight: 800, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(249,115,22,.4)' }}>
-                    ⭐ Most Popular
-                  </div>
-                )}
-                <div style={{ color: p.dark ? 'rgba(255,255,255,.55)' : '#9ca3af', fontSize: '.78rem', fontWeight: 600, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '.06em' }}>{p.name}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
-                  <span style={{ fontSize: '2.4rem', fontWeight: 900, color: p.dark ? '#fff' : '#111', fontFamily: '"Playfair Display",serif', lineHeight: 1, transition: 'all .3s' }}>
-                    ₹{billingYearly ? p.yearlyPrice : p.monthlyPrice}
-                  </span>
-                  <span style={{ color: p.dark ? 'rgba(255,255,255,.45)' : '#9ca3af', fontSize: '.8rem' }}>{p.monthlyPrice === 0 ? 'Free forever' : p.sub}</span>
-                </div>
-                {billingYearly && p.monthlyPrice > 0 && (
-                  <div style={{ fontSize: '.72rem', color: '#10b981', fontWeight: 700, marginBottom: 4 }}>
-                    Save ₹{(p.monthlyPrice - p.yearlyPrice) * 12}/year
-                  </div>
-                )}
-                <div style={{ height: 1, background: p.dark ? 'rgba(255,255,255,.12)' : '#f3f4f6', margin: '18px 0' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-                  {p.features.map((f, j) => (
-                    <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: '.84rem', color: p.dark ? 'rgba(255,255,255,.85)' : '#374151' }}>
-                      <span style={{ color: p.dark ? '#a5f3fc' : '#10b981', fontWeight: 900, fontSize: '.9rem', flexShrink: 0 }}>✓</span>{f}
-                    </div>
-                  ))}
-                </div>
-                <Link href="/signup" className="btn-primary" style={{ display: 'block', textAlign: 'center', padding: '12px', background: p.popular ? 'rgba(255,255,255,.18)' : p.dark ? 'rgba(255,255,255,.1)' : 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontWeight: 700, fontSize: '.88rem', border: p.dark ? '1.5px solid rgba(255,255,255,.25)' : 'none', boxShadow: !p.dark ? '0 4px 14px rgba(79,70,229,.3)' : 'none' }}>
-                  {p.cta}
-                </Link>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      {/* ── FEATURED USERS ── */}
+      <FeaturedUsers />
 
       {/* ── TESTIMONIALS ── */}
       <section style={{ padding: '88px 0', background: '#f8f7ff', overflow: 'hidden' }}>
@@ -959,50 +771,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA BANNER 1 ── */}
-      <section style={{ padding: '28px 6%', background: '#fff' }}>
-        <div style={{
-          maxWidth: 1100, margin: '0 auto',
-          background: 'linear-gradient(120deg, #e8eeff 0%, #dbeafe 60%, #c7d2fe 100%)',
-          borderRadius: 20,
-          padding: '28px 36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 24,
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 24px rgba(79,70,229,.10)',
-          border: '1.5px solid rgba(99,102,241,.12)',
-        }}>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#1e1b4b', marginBottom: 6 }}>
-              Launch Your Professional Website in Under 5 Minutes
-            </div>
-            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
-              Pick a template, add your content, go live — no coding needed with Webrazeo.
-            </div>
-          </div>
-          <Link href="/signup" style={{
-            padding: '13px 28px',
-            background: '#1e1b4b',
-            color: '#fff',
-            borderRadius: 10,
-            textDecoration: 'none',
-            fontWeight: 700,
-            fontSize: '.9rem',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-            boxShadow: '0 4px 14px rgba(30,27,75,.25)',
-            transition: 'all .2s',
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#312e81' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#1e1b4b' }}
-          >
-            Start for Free →
-          </Link>
-        </div>
-      </section>
-
       {/* ── FAQ ── */}
       <section id="faq" style={{ padding: '88px 6%', background: '#fff' }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 52 }}>
@@ -1012,74 +780,6 @@ export default function HomePage() {
         </Reveal>
         <Reveal style={{ maxWidth: 680, margin: '0 auto', background: '#fff', borderRadius: 20, border: '1px solid #e5e7eb', overflow: 'hidden', boxShadow: '0 4px 24px rgba(79,70,229,.06)' }}>
           {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
-        </Reveal>
-      </section>
-
-      {/* ── CTA BANNER 2 ── */}
-      <section style={{ padding: '28px 6% 56px', background: '#fff' }}>
-        <div style={{
-          maxWidth: 1100, margin: '0 auto',
-          background: 'linear-gradient(120deg, #f5f3ff 0%, #ede9fe 50%, #ddd6fe 100%)',
-          borderRadius: 20,
-          padding: '28px 36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 24,
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 24px rgba(124,58,237,.10)',
-          border: '1.5px solid rgba(124,58,237,.14)',
-        }}>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 'clamp(.95rem,2vw,1.15rem)', color: '#3b0764', marginBottom: 6 }}>
-              Already have a business? Bring it online today.
-            </div>
-            <div style={{ color: '#4b5563', fontSize: '.88rem' }}>
-              Join 1,200+ restaurants, hotels & local businesses growing with Webrazeo.
-            </div>
-          </div>
-          <Link href="/signup" style={{
-            padding: '13px 28px',
-            background: 'linear-gradient(135deg,#7c3aed,#4f46e5)',
-            color: '#fff',
-            borderRadius: 10,
-            textDecoration: 'none',
-            fontWeight: 700,
-            fontSize: '.9rem',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-            boxShadow: '0 4px 14px rgba(124,58,237,.3)',
-            transition: 'all .2s',
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '.88' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-          >
-            Get Started Free →
-          </Link>
-        </div>
-      </section>
-
-      {/* ── CTA ── */}
-      <section style={{ padding: '88px 6%', background: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#4c1d95 70%,#1e1b4b 100%)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-80px', left: '50%', transform: 'translateX(-50%)', width: 700, height: 700, background: 'radial-gradient(circle,rgba(129,140,248,.25),transparent 65%)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-60px', right: '-60px', width: 300, height: 300, background: 'radial-gradient(circle,rgba(236,72,153,.2),transparent 65%)', borderRadius: '50%', pointerEvents: 'none' }} />
-        <Reveal style={{ position: 'relative', zIndex: 1 }}>
-          <div className="tag" style={{ background: 'rgba(99,102,241,.2)', color: '#a5b4fc', marginBottom: 18 }}>Get started today</div>
-          <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.9rem)', fontWeight: 900, color: '#fff', fontFamily: '"Playfair Display",serif', marginBottom: 16, lineHeight: 1.15 }}>
-            Your customers are searching<br />for you online right now
-          </h2>
-          <p style={{ color: '#94a3b8', fontSize: '.97rem', maxWidth: 440, margin: '0 auto 32px', lineHeight: 1.85 }}>
-            1,200+ restaurants, hotels and local businesses already have their store live. Join them — it takes less than 5 minutes.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/signup" className="btn-primary" style={{ padding: '14px 36px', background: 'linear-gradient(135deg,#4f46e5,#7c3aed)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: '.97rem', fontWeight: 700, boxShadow: '0 8px 24px rgba(79,70,229,.45)', display: 'inline-block' }}>
-              Create My Free Store →
-            </Link>
-            <Link href="/login" className="btn-outline" style={{ padding: '14px 36px', background: 'rgba(255,255,255,.08)', color: '#e2e8f0', border: '1.5px solid rgba(255,255,255,.15)', borderRadius: 10, textDecoration: 'none', fontSize: '.97rem', fontWeight: 600, display: 'inline-block' }}>
-              Log In
-            </Link>
-          </div>
-          <p style={{ color: '#475569', fontSize: '.78rem', marginTop: 18 }}>No credit card · Free plan available · Cancel anytime</p>
         </Reveal>
       </section>
 

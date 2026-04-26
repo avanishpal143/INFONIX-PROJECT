@@ -86,7 +86,7 @@ const DEFAULT_CONFIG = {
 const EMPTY: any = {
   name:'', category:'', icon:'🌐', desc:'',
   color:'linear-gradient(135deg,#4F46E5,#7C3AED)', accentColor:'#4F46E5',
-  tags:'', popular:false, isActive:true, previewImage:'', templateType:'general',
+  tags:'', popular:false, isActive:true, showOnHomepage:false, previewImage:'', templateType:'general',
   config: { ...DEFAULT_CONFIG, sections: { ...DEFAULT_CONFIG.sections }, socialLinks: { ...DEFAULT_CONFIG.socialLinks } },
 }
 
@@ -360,7 +360,7 @@ function LivePreview({ form, fullscreen = false }: { form: any; fullscreen?: boo
 const EMPTY_FORM: any = {
   name:'', category:'', icon:'🌐', desc:'',
   color:'linear-gradient(135deg,#4F46E5,#7C3AED)', accentColor:'#4F46E5',
-  tags:'', popular:false, isActive:true, previewImage:'', templateType:'general',
+  tags:'', popular:false, isActive:true, showOnHomepage:false, previewImage:'', templateType:'general',
   config: { ...DEFAULT_CONFIG, sections:{...DEFAULT_CONFIG.sections}, socialLinks:{...DEFAULT_CONFIG.socialLinks} },
 }
 
@@ -483,6 +483,13 @@ export default function AdminTemplatesPage() {
                 </label>
                 <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:'.84rem', color:C.text, cursor:'pointer' }}>
                   <input type="checkbox" checked={form.isActive} onChange={e => setForm((f:any) => ({...f,isActive:e.target.checked}))} /> Active
+                </label>
+                <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:'.84rem', color:C.text, cursor:'pointer' }}>
+                  <input type="checkbox" checked={form.showOnHomepage} onChange={e => setForm((f:any) => ({...f,showOnHomepage:e.target.checked}))} /> 
+                  <span style={{ display:'flex', alignItems:'center', gap:4 }}>
+                    Show on Homepage 
+                    <span style={{ fontSize:'.7rem', background:`${C.purple}15`, color:C.purple, padding:'2px 6px', borderRadius:4, fontWeight:700 }}>Max 9</span>
+                  </span>
                 </label>
               </div>
             </div>

@@ -10,6 +10,7 @@ export interface ITemplate extends Document {
   tags: string[]
   popular: boolean
   isActive: boolean
+  showOnHomepage: boolean  // New field to control homepage visibility
   previewImage: string
   files: string[]
   usageCount: number
@@ -76,6 +77,7 @@ const TemplateSchema = new Schema<ITemplate>({
   tags:         { type: [String], default: [] },
   popular:      { type: Boolean, default: false },
   isActive:     { type: Boolean, default: true },
+  showOnHomepage: { type: Boolean, default: false },  // New field
   previewImage: { type: String, default: '' },
   files:        { type: [String], default: [] },
   usageCount:   { type: Number, default: 0 },
